@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+dependencies {
+  compile 'za.redbridge.simulator:simulator:0.1-SNAPSHOT'
+}
