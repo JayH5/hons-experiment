@@ -7,7 +7,6 @@ import org.encog.ml.ea.genome.Genome;
 import org.encog.ml.genetic.GeneticError;
 import org.encog.neural.NeuralNetworkError;
 import org.encog.neural.neat.NEATLink;
-import org.encog.neural.neat.NEATNetwork;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.NEATPopulation;
 import org.encog.neural.neat.training.NEATLinkGene;
@@ -65,7 +64,7 @@ public class MMNEATCODEC implements GeneticCODEC, Serializable {
 
         Collections.sort(links);
 
-        final NEATNetwork network = new NEATNetwork(neatGenome.getInputCount(),
+        MMNEATNetwork network = new MMNEATNetwork(neatGenome.getInputCount(),
                 neatGenome.getOutputCount(), links, afs);
 
         network.setActivationCycles(pop.getActivationCycles());
