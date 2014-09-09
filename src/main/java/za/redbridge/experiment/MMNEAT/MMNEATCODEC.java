@@ -64,8 +64,18 @@ public class MMNEATCODEC implements GeneticCODEC, Serializable {
 
         Collections.sort(links);
 
+        // Create the sensor morphology
+        final int inputCount = neatGenome.getInputCount();
+        final List<MMNEATNeuronGene> inputNeurons = neatGenome.getInputNeuronsChromosome();
+        SensorMorphology morphology = new SensorMorphology(inputCount);
+        for (int i = 0; i < inputCount; i++) {
+            MMNEATNeuronGene inputNeuron = inputNeurons.get(i);
+            morphology.setSensorBearing(i, inputNeuron.getInputSensorBearing());
+            morphology.setSensorOrientation(i, inputNeuron.getInputSensorOrientation());
+        }
+
         MMNEATNetwork network = new MMNEATNetwork(neatGenome.getInputCount(),
-                neatGenome.getOutputCount(), links, afs);
+                neatGenome.getOutputCount(), links, afs, morphology);
 
         network.setActivationCycles(pop.getActivationCycles());
         return network;
