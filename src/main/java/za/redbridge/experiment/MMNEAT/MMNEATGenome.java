@@ -104,6 +104,8 @@ public class MMNEATGenome extends NEATGenome {
      */
     public MMNEATGenome(Random rnd, NEATPopulation pop, int inputCount, final int outputCount,
             double connectionDensity) {
+        MMNEATPopulation population = (MMNEATPopulation) pop;
+
         setAdjustedScore(0);
         setInputCount(inputCount);
         setOutputCount(outputCount);
@@ -124,6 +126,16 @@ public class MMNEATGenome extends NEATGenome {
             MMNEATNeuronGene gene =
                     new MMNEATNeuronGene(NEATNeuronType.Input, af, i, innovationID++);
             neurons.add(gene);
+
+            double bearing = RangeRandomizer.randomize(rnd, -population.getSensorBearingRange(),
+                    population.getSensorBearingRange());
+            gene.setInputSensorBearing(bearing);
+
+            double orientation = RangeRandomizer.randomize(rnd,
+                    -population.getSensorOrientationRange(),
+                    population.getSensorOrientationRange());
+            gene.setInputSensorOrientation(orientation);
+
             inputsList.add(gene);
         }
 
@@ -139,15 +151,12 @@ public class MMNEATGenome extends NEATGenome {
         for (int i = 0; i < inputCount + 1; i++) {
             for (int j = 0; j < outputCount; j++) {
                 // make sure we have at least one connection
-                if (links.size() < 1
-                        || rnd.nextDouble() < connectionDensity) {
+                if (links.size() < 1 || rnd.nextDouble() < connectionDensity) {
                     long fromID = neurons.get(i).getId();
-                    long toID = neurons.get(inputCount + j + 1)
-                            .getId();
-                    double w = RangeRandomizer.randomize(rnd,
-                            -pop.getWeightRange(), pop.getWeightRange());
-                    NEATLinkGene gene = new NEATLinkGene(fromID, toID, true,
-                            innovationID++, w);
+                    long toID = neurons.get(inputCount + j + 1).getId();
+                    double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(),
+                            pop.getWeightRange());
+                    NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID++, w);
                     links.add(gene);
                 }
             }

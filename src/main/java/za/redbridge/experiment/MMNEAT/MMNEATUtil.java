@@ -38,8 +38,8 @@ public final class MMNEATUtil {
      * @param calculateScore The score function.
      * @return The NEAT EA trainer.
      */
-    public static TrainEA constructNEATTrainer(final MMNEATPopulation population,
-                                               final CalculateScore calculateScore) {
+    public static TrainEA constructNEATTrainer(MMNEATPopulation population,
+            CalculateScore calculateScore) {
         final TrainEA result = new TrainEA(population, calculateScore);
 
         // Speciation

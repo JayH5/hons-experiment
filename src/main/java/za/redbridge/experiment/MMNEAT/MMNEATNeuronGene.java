@@ -41,6 +41,11 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
         setNeuronType(other.getNeuronType());
         setActivationFunction(other.getActivationFunction());
         setInnovationId(other.getInnovationId());
+
+        if (getNeuronType() == NEATNeuronType.Input) {
+            setInputSensorBearing(other.getInputSensorBearing());
+            setInputSensorOrientation(other.getInputSensorOrientation());
+        }
     }
 
     public double getInputSensorBearing() {
