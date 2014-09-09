@@ -6,6 +6,7 @@ import com.beust.jcommander.Parameter;
 import org.encog.Encog;
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 
+import za.redbridge.experiment.MMNEAT.MMNEATCODEC;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
 import za.redbridge.simulator.config.SimConfig;
@@ -30,8 +31,9 @@ public class Main {
         population.reset();
 
         ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
+        calculateScore.calculateScore(new MMNEATCODEC().decode(population.getBestGenome()));
 
-        EvolutionaryAlgorithm train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
+        /*EvolutionaryAlgorithm train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
 
         for (int i = 0; i < options.numIterations; i++) {
             train.iteration();
@@ -40,7 +42,7 @@ public class Main {
         }
 
         System.out.println("Training complete");
-        Encog.getInstance().shutdown();
+        Encog.getInstance().shutdown();*/
     }
 
     private static class Args {

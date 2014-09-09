@@ -6,8 +6,10 @@ import org.encog.ml.MLMethod;
 import java.awt.Color;
 import java.awt.Paint;
 
+import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.simulator.Simulation;
+import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
 import za.redbridge.simulator.factories.HalfBigHalfSmallResourceFactory;
 import za.redbridge.simulator.factories.HomogeneousRobotFactory;
@@ -43,7 +45,11 @@ public class ScoreCalculator implements CalculateScore {
 
         // Create the simulation and run it
         Simulation simulation = new Simulation(robotFactory, resourceFactory, simConfig);
-        simulation.run();
+        //simulation.run();
+
+        SimulationGUI simulationGUI = new SimulationGUI(simulation);
+        Console console = new Console(simulationGUI);
+        console.setVisible(true);
 
         // Get the fitness
         lastScore = simulation.getFitness();
