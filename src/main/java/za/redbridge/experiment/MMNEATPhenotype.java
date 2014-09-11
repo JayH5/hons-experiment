@@ -3,10 +3,9 @@ package za.redbridge.experiment;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 
-import java.awt.Color;
-import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sim.util.Double2D;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
@@ -67,5 +66,10 @@ public class MMNEATPhenotype implements Phenotype {
     @Override
     public Phenotype clone() {
         return new MMNEATPhenotype(network);
+    }
+
+    @Override
+    public void configure(Map<String, Object> stringObjectMap) {
+        throw new UnsupportedOperationException();
     }
 }
