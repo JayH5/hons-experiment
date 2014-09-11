@@ -8,7 +8,6 @@ import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
-import za.redbridge.simulator.config.ExperimentConfig;
 import za.redbridge.simulator.config.SimConfig;
 
 /**
@@ -27,17 +26,10 @@ public class Main {
             simConfig = new SimConfig();
         }
 
-        ExperimentConfig experimentConfig;
-        if (options.experimentFile != null && !options.experimentFile.isEmpty()) {
-            experimentConfig = new ExperimentConfig(options.experimentFile);
-        } else {
-            experimentConfig = new ExperimentConfig();
-        }
-
-        MMNEATPopulation population = new MMNEATPopulation(2, options.numSensors, 1000);
+        MMNEATPopulation population = new MMNEATPopulation(4, options.numSensors, 1000);
         population.reset();
 
-        ScoreCalculator calculateScore = new ScoreCalculator(simConfig, experimentConfig);
+        ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
 
         EvolutionaryAlgorithm train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
 
@@ -54,9 +46,6 @@ public class Main {
     private static class Args {
         @Parameter(names = "-c", description = "Simulation config file to load")
         private String configFile = null;
-
-        @Parameter(names = "-e", description = "Experiment config file to load")
-        private String experimentFile = null;
 
         @Parameter(names = "-i", description = "Number of simulation iterations to train for")
         private int numIterations = 500;

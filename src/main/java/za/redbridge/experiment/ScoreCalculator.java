@@ -8,11 +8,8 @@ import java.awt.Paint;
 
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.simulator.Simulation;
-import za.redbridge.simulator.config.ExperimentConfig;
 import za.redbridge.simulator.config.SimConfig;
-import za.redbridge.simulator.factories.HalfBigHalfSmallResourceFactory;
 import za.redbridge.simulator.factories.HomogeneousRobotFactory;
-import za.redbridge.simulator.factories.ResourceFactory;
 import za.redbridge.simulator.factories.RobotFactory;
 
 /**
@@ -25,13 +22,11 @@ public class ScoreCalculator implements CalculateScore {
     private static final Paint DEFAULT_ROBOT_PAINT = Color.BLACK;
 
     private final SimConfig simConfig;
-    private final ExperimentConfig experimentConfig;
 
     private double lastScore;
 
-    public ScoreCalculator(SimConfig simConfig, ExperimentConfig experimentConfig) {
+    public ScoreCalculator(SimConfig simConfig) {
         this.simConfig = simConfig;
-        this.experimentConfig = experimentConfig;
     }
 
     @Override
@@ -43,8 +38,7 @@ public class ScoreCalculator implements CalculateScore {
                 DEFAULT_ROBOT_MASS, DEFAULT_ROBOT_RADIUS, DEFAULT_ROBOT_PAINT);
 
         // Create the simulation and run it
-        Simulation simulation =
-                new Simulation(simConfig, experimentConfig, robotFactory);
+        Simulation simulation = new Simulation(simConfig, robotFactory, 15);
         simulation.run();
 
         // Get the fitness
@@ -59,7 +53,7 @@ public class ScoreCalculator implements CalculateScore {
 
     @Override
     public boolean requireSingleThreaded() {
-        return true;
+        return false;
     }
 
     public double getLastScore() {

@@ -1,0 +1,19 @@
+---
+simulation:
+  iterations: 25000
+resourceProperties:
+  smallResources: 10
+  smallObjectWidth: 0.4
+  smallObjectHeight: 0.4
+  smallObjectMass: 2.0
+  maxSmallObjectPushingBots: 1
+  largeResources: 10
+  largeObjectWidth: 0.8
+  largeObjectHeight: 0.8
+  largeObjectMass: 5.0
+  maxLargeObjectPushingBots: 2
+robots:
+  numRobots: 15
+  mass: 0.7
+  radius: 0.15
+  colour: 0, 0, 0
