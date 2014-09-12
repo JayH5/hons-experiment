@@ -26,7 +26,8 @@ public class Main {
             simConfig = new SimConfig();
         }
 
-        MMNEATPopulation population = new MMNEATPopulation(4, options.numSensors, 1000);
+        MMNEATPopulation population =
+                new MMNEATPopulation(options.numSensors, 2, options.populationSize);
         population.reset();
 
         ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
@@ -55,5 +56,8 @@ public class Main {
 
         @Parameter(names = "--ui", description = "Display GUI")
         private boolean ui = false;
+
+        @Parameter(names = "-p", description = "Initial population size")
+        private int populationSize = 100;
     }
 }
