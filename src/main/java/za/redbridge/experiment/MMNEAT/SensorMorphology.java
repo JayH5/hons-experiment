@@ -1,10 +1,14 @@
 package za.redbridge.experiment.MMNEAT;
 
+import java.io.Serializable;
+
 /**
  * Container class for the bearing and orientation values for a sensor morphology configuration.
  * Created by jamie on 2014/09/09.
  */
-public class SensorMorphology {
+public class SensorMorphology implements Serializable {
+
+    private static final long serialVersionUID = 5166321415840834464L;
 
     private final int numSensors;
 
