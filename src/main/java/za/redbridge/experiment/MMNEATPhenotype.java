@@ -20,8 +20,8 @@ import za.redbridge.simulator.sensor.SensorReading;
  */
 public class MMNEATPhenotype implements Phenotype {
 
-    private static final float DEFAULT_SENSOR_RANGE = 0.4f;
-    private static final float DEFAULT_SENSOR_FOV = 0.1f;
+    private static final float DEFAULT_SENSOR_RANGE = 1f;
+    private static final float DEFAULT_SENSOR_FOV = 0.2f;
 
     private final MMNEATNetwork network;
     private final double[] inputs;
