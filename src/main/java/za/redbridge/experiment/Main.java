@@ -38,13 +38,19 @@ public class Main {
             simConfig = new SimConfig();
         }
 
+        ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
+
+        if (options.genomePath != null && !options.genomePath.isEmpty()) {
+            MMNEATNetwork network = loadNetwork(options.genomePath);
+            calculateScore.demo(network);
+            return;
+        }
+
         MMNEATPopulation population =
                 new MMNEATPopulation(options.numSensors, 2, options.populationSize);
         population.reset();
 
         System.out.println("Population initialized");
-
-        ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
 
         EvolutionaryAlgorithm train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
 
@@ -83,9 +89,9 @@ public class Main {
         }
     }
 
-    private static MMNEATNetwork loadNetwork(String name) {
+    private static MMNEATNetwork loadNetwork(String filepath) {
         MMNEATNetwork network = null;
-        Path path = Paths.get("networks", name);
+        Path path = Paths.get(filepath);
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(path))) {
             network = (MMNEATNetwork) in.readObject();
         } catch (IOException e) {
@@ -108,10 +114,10 @@ public class Main {
         @Parameter(names = "-s", description = "Number of sensors")
         private int numSensors = 4;
 
-        @Parameter(names = "--ui", description = "Display GUI")
-        private boolean ui = false;
-
         @Parameter(names = "-p", description = "Initial population size")
         private int populationSize = 50;
+
+        @Parameter(names = "--demo", description = "Show a GUI demo of a given genome")
+        private String genomePath = null;
     }
 }
