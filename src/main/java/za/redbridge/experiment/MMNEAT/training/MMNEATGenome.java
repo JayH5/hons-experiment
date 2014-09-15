@@ -1,4 +1,4 @@
-package za.redbridge.experiment.MMNEAT;
+package za.redbridge.experiment.MMNEAT.training;
 
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.mathutil.randomize.RangeRandomizer;
@@ -11,6 +11,8 @@ import org.encog.neural.neat.training.NEATNeuronGene;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 
 /**
  * Created by jamie on 2014/09/08.

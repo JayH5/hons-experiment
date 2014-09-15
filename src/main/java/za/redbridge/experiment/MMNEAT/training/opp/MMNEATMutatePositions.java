@@ -1,4 +1,4 @@
-package za.redbridge.experiment.MMNEAT.opp;
+package za.redbridge.experiment.MMNEAT.training.opp;
 
 import org.encog.ml.ea.genome.Genome;
 import org.encog.neural.neat.training.opp.NEATMutation;
@@ -6,11 +6,11 @@ import org.encog.neural.neat.training.opp.NEATMutation;
 import java.util.List;
 import java.util.Random;
 
-import za.redbridge.experiment.MMNEAT.MMNEATGenome;
-import za.redbridge.experiment.MMNEAT.MMNEATNeuronGene;
+import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
+import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
-import za.redbridge.experiment.MMNEAT.opp.sensors.MutateSensorPosition;
-import za.redbridge.experiment.MMNEAT.opp.sensors.SelectSensors;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutateSensorPosition;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensors;
 
 /**
  * Created by jamie on 2014/09/08.

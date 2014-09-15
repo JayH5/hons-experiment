@@ -1,4 +1,4 @@
-package za.redbridge.experiment.MMNEAT;
+package za.redbridge.experiment.MMNEAT.training;
 
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.neat.NEATNeuronType;

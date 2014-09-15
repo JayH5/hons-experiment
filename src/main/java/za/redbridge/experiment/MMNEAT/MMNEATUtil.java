@@ -15,9 +15,9 @@ import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
 import org.encog.neural.neat.training.species.OriginalNEATSpeciation;
 
-import za.redbridge.experiment.MMNEAT.opp.MMNEATMutatePositions;
-import za.redbridge.experiment.MMNEAT.opp.sensors.MutatePerturbSensorPosition;
-import za.redbridge.experiment.MMNEAT.opp.sensors.SelectSensorsFixed;
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
 
 /**
  * Created by jamie on 2014/09/08.

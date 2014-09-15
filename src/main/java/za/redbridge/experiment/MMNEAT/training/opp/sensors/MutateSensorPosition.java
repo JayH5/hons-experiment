@@ -1,10 +1,10 @@
-package za.redbridge.experiment.MMNEAT.opp.sensors;
+package za.redbridge.experiment.MMNEAT.training.opp.sensors;
 
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 
 import java.util.Random;
 
-import za.redbridge.experiment.MMNEAT.MMNEATNeuronGene;
+import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 
 /**
  * Created by jamie on 2014/09/08.

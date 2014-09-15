@@ -10,6 +10,8 @@ import org.encog.neural.neat.training.NEATNeuronGene;
 import java.util.List;
 import java.util.Random;
 
+import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
+
 /**
  * Created by jamie on 2014/09/08.
  */

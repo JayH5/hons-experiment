@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
+import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
+
 /**
  * Created by jamie on 2014/09/08.
  */
