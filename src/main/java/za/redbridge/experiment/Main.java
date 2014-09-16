@@ -57,9 +57,12 @@ public class Main {
         String date = getDateFolderName();
 
         for (int i = 0; i < options.numIterations; i++) {
+            calculateScore.resetEpochScore();
             train.iteration();
-            System.out.println("Epoch #" + train.getIteration() + " Score: "
-                    + calculateScore.getLastScore());
+
+            double totalScore = calculateScore.getEpochTotalScore();
+            System.out.println("Epoch #" + train.getIteration() + " Average score: "
+                    + totalScore / options.populationSize);
 
             // Save the network
             MMNEATNetwork network = (MMNEATNetwork) train.getCODEC().decode(train.getBestGenome());

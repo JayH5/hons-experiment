@@ -25,7 +25,8 @@ public class ScoreCalculator implements CalculateScore {
 
     private final SimConfig simConfig;
 
-    private double lastScore;
+    private final Object statsLock = new Object();
+    private double epochTotalScore;
 
     public ScoreCalculator(SimConfig simConfig) {
         this.simConfig = simConfig;
@@ -43,9 +44,11 @@ public class ScoreCalculator implements CalculateScore {
         Simulation simulation = new Simulation(simConfig, robotFactory, 15);
         simulation.run();
 
-        // Get the fitness
-        lastScore = simulation.getFitness();
-        return lastScore;
+        // Get the fitness and update the total score
+        double score = simulation.getFitness();
+        incrementEpochScore(score);
+
+        return score;
     }
 
     public void demo(MMNEATNetwork network) {
@@ -63,6 +66,22 @@ public class ScoreCalculator implements CalculateScore {
         console.setVisible(true);
     }
 
+    public void resetEpochScore() {
+        synchronized (statsLock) {
+            epochTotalScore = 0.0;
+        }
+    }
+
+    private void incrementEpochScore(double amount) {
+        synchronized (statsLock) {
+            epochTotalScore += amount;
+        }
+    }
+
+    public double getEpochTotalScore() {
+        return epochTotalScore;
+    }
+
     @Override
     public boolean shouldMinimize() {
         return false;
@@ -73,7 +92,4 @@ public class ScoreCalculator implements CalculateScore {
         return false;
     }
 
-    public double getLastScore() {
-        return lastScore;
-    }
 }
