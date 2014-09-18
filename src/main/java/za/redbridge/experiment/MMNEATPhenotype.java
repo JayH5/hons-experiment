@@ -60,7 +60,7 @@ public class MMNEATPhenotype implements Phenotype {
         MLData input = new BasicMLData(inputs);
         MLData output = network.compute(input);
 
-        return new Double2D(output.getData(0), output.getData(1));
+        return new Double2D(output.getData(0) * 2.0 - 1.0, output.getData(1) * 2.0 - 1.0);
     }
 
     @Override
