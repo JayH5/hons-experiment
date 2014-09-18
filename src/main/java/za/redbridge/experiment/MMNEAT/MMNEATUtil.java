@@ -15,6 +15,7 @@ import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
 import org.encog.neural.neat.training.species.OriginalNEATSpeciation;
 
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
@@ -88,8 +89,9 @@ public final class MMNEATUtil {
         result.addOperation(0.0005, new NEATMutateRemoveLink());
 
         // Add the sensor position mutator
-        result.addOperation(0.05, new MMNEATMutatePositions(
+        result.addOperation(0.045, new MMNEATMutatePositions(
                 new SelectSensorsFixed(1), new MutatePerturbSensorPosition(1, 1)));
+        result.addOperation(0.005, new MMNEATMutateAddSensor());
 
 
         result.getOperators().finalizeStructure();
