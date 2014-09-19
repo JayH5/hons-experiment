@@ -75,6 +75,7 @@ public class MMNEATCODEC implements GeneticCODEC, Serializable {
             MMNEATNeuronGene inputNeuron = inputNeurons.get(i);
             morphology.setSensorBearing(i, inputNeuron.getInputSensorBearing());
             morphology.setSensorOrientation(i, inputNeuron.getInputSensorOrientation());
+            morphology.setSensorType(i, inputNeuron.getInputSensorType());
         }
 
         MMNEATNetwork network = new MMNEATNetwork(neatGenome.getInputCount(),

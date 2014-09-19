@@ -2,6 +2,9 @@ package za.redbridge.experiment.MMNEAT;
 
 import java.io.Serializable;
 
+import za.redbridge.experiment.sensor.SensorType;
+import za.redbridge.simulator.sensor.AgentSensor;
+
 /**
  * Container class for the bearing and orientation values for a sensor morphology configuration.
  * Created by jamie on 2014/09/09.
@@ -14,6 +17,7 @@ public class SensorMorphology implements Serializable {
 
     private final double[] bearings;
     private final double[] orientations;
+    private final SensorType[] types;
 
     public SensorMorphology(int numSensors) {
         if (numSensors <= 0) {
@@ -24,15 +28,11 @@ public class SensorMorphology implements Serializable {
 
         bearings = new double[numSensors];
         orientations = new double[numSensors];
+        types = new SensorType[numSensors];
     }
 
     public int getNumSensors() {
         return numSensors;
-    }
-
-    public double getSensorBearing(int index) {
-        checkValidIndex(index);
-        return bearings[index];
     }
 
     void setSensorBearing(int index, double bearing) {
@@ -40,14 +40,19 @@ public class SensorMorphology implements Serializable {
         bearings[index] = bearing;
     }
 
-    public double getSensorOrientation(int index) {
-        checkValidIndex(index);
-        return orientations[index];
-    }
-
     void setSensorOrientation(int index, double orientation) {
         checkValidIndex(index);
         orientations[index] = orientation;
+    }
+
+    void setSensorType(int index, SensorType type) {
+        checkValidIndex(index);
+        types[index] = type;
+    }
+
+    public AgentSensor getSensor(int index) {
+        checkValidIndex(index);
+        return types[index].getSensor((float) bearings[index], (float) orientations[index]);
     }
 
     private void checkValidIndex(int index) {

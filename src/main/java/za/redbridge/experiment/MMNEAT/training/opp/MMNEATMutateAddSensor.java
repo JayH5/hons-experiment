@@ -15,6 +15,7 @@ import java.util.Random;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
+import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Mutation to add a single new input node to the network.
@@ -43,6 +44,7 @@ public class MMNEATMutateAddSensor extends NEATMutation {
                 -pop.getSensorBearingRange(), pop.getSensorBearingRange()));
         inputNeuron.setInputSensorOrientation(RangeRandomizer.randomize(rnd,
                 -pop.getSensorOrientationRange(), pop.getSensorOrientationRange()));
+        inputNeuron.setInputSensorType(pickRandomSensorType(rnd));
         target.addInputNeuron(inputNeuron);
 
         // Create the links to the new input in the same manner as links are added when the
@@ -65,6 +67,17 @@ public class MMNEATMutateAddSensor extends NEATMutation {
 
         target.addInputNeuron(inputNeuron);
         target.sortGenes();
+    }
+
+    private static SensorType pickRandomSensorType(Random rnd) {
+        double random = rnd.nextDouble();
+        if (random < 0.4) {
+            return SensorType.COLLISION;
+        } else if (random < 0.8) {
+            return SensorType.RESOURCE;
+        } else {
+            return SensorType.TARGET_AREA;
+        }
     }
 
 }

@@ -4,6 +4,8 @@ import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.training.NEATNeuronGene;
 
+import za.redbridge.experiment.sensor.SensorType;
+
 /**
  * Created by jamie on 2014/09/08.
  */
@@ -13,6 +15,7 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
 
     private double inputSensorBearing;
     private double inputSensorOrientation;
+    private SensorType inputSensorType;
 
     public MMNEATNeuronGene(NEATNeuronType type, ActivationFunction theActivationFunction, long id,
             long innovationID) {
@@ -45,6 +48,7 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
         if (getNeuronType() == NEATNeuronType.Input) {
             setInputSensorBearing(other.getInputSensorBearing());
             setInputSensorOrientation(other.getInputSensorOrientation());
+            setInputSensorType(other.getInputSensorType());
         }
     }
 
@@ -66,6 +70,15 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
     public void setInputSensorOrientation(double inputSensorOrientation) {
         checkInputNeuron();
         this.inputSensorOrientation = inputSensorOrientation;
+    }
+
+    public SensorType getInputSensorType() {
+        checkInputNeuron();
+        return inputSensorType;
+    }
+
+    public void setInputSensorType(SensorType inputSensorType) {
+        this.inputSensorType = inputSensorType;
     }
 
     private void checkInputNeuron() {

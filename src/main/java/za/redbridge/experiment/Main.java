@@ -46,8 +46,7 @@ public class Main {
             return;
         }
 
-        MMNEATPopulation population =
-                new MMNEATPopulation(options.numSensors, 2, options.populationSize);
+        MMNEATPopulation population = new MMNEATPopulation(2, options.populationSize);
         population.reset();
 
         System.out.println("Population initialized");
@@ -78,17 +77,16 @@ public class Main {
         return df.format(new Date());
     }
 
-    private static void saveNetwork(MMNEATNetwork network, String name, String folder) {
+    private static void saveNetwork(MMNEATNetwork network, String name, String folder)
+            throws IOException {
         File dir = new File("networks/" + folder);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Failed to create directory structure for networks");
         }
 
         Path path = Paths.get(new File(dir, name).toURI());
         try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
             out.writeObject(network);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -113,9 +111,6 @@ public class Main {
 
         @Parameter(names = "-i", description = "Number of simulation iterations to train for")
         private int numIterations = 500;
-
-        @Parameter(names = "-s", description = "Number of sensors")
-        private int numSensors = 4;
 
         @Parameter(names = "-p", description = "Initial population size")
         private int populationSize = 50;

@@ -20,9 +20,6 @@ import za.redbridge.simulator.sensor.SensorReading;
  */
 public class MMNEATPhenotype implements Phenotype {
 
-    private static final float DEFAULT_SENSOR_RANGE = 1f;
-    private static final float DEFAULT_SENSOR_FOV = 0.2f;
-
     private final MMNEATNetwork network;
     private final double[] inputs;
 
@@ -36,11 +33,7 @@ public class MMNEATPhenotype implements Phenotype {
         final int numSensors = morphology.getNumSensors();
         sensors = new ArrayList<>(numSensors);
         for (int i = 0; i < numSensors; i++) {
-            sensors.add(new ProximityAgentSensor(
-                    (float) morphology.getSensorBearing(i),
-                    (float) morphology.getSensorOrientation(i),
-                    DEFAULT_SENSOR_RANGE,
-                    DEFAULT_SENSOR_FOV));
+            sensors.add(morphology.getSensor(i));
         }
 
         inputs = new double[numSensors];

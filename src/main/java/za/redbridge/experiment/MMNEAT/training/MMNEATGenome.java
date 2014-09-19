@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
+import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -100,17 +101,18 @@ public class MMNEATGenome extends NEATGenome {
      * constructor is typically used to create the initial population.
      * @param rnd Random number generator.
      * @param pop The population.
-     * @param inputCount The input count.
      * @param outputCount The output count.
      * @param connectionDensity The connection density.
      */
-    public MMNEATGenome(Random rnd, NEATPopulation pop, int inputCount, final int outputCount,
-            double connectionDensity) {
+    public MMNEATGenome(Random rnd, NEATPopulation pop, int outputCount, double connectionDensity) {
         MMNEATPopulation population = (MMNEATPopulation) pop;
 
+        final SensorType[] sensorTypes = SensorType.values();
+        final int inputCount = sensorTypes.length;
+
         setAdjustedScore(0);
-        setInputCount(inputCount);
         setOutputCount(outputCount);
+        setInputCount(inputCount);
 
         // get the activation function
         ActivationFunction af = pop.getActivationFunctions().pickFirst();
@@ -123,7 +125,7 @@ public class MMNEATGenome extends NEATGenome {
                 new MMNEATNeuronGene(NEATNeuronType.Bias, af, inputCount, innovationID++);
         neurons.add(biasGene);
 
-        // then inputs
+        // then inputs - minimal set is one of each sensor type
         for (int i = 0; i < inputCount; i++) {
             MMNEATNeuronGene gene =
                     new MMNEATNeuronGene(NEATNeuronType.Input, af, i, innovationID++);
@@ -137,6 +139,9 @@ public class MMNEATGenome extends NEATGenome {
                     -population.getSensorOrientationRange(),
                     population.getSensorOrientationRange());
             gene.setInputSensorOrientation(orientation);
+
+            SensorType sensorType = sensorTypes[i];
+            gene.setInputSensorType(sensorType);
 
             inputsList.add(gene);
         }

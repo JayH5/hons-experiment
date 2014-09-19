@@ -25,7 +25,7 @@ public class FactorMMNEATGenome implements NEATGenomeFactory {
     @Override
     public NEATGenome factor(Random rnd, NEATPopulation pop, int inputCount, int outputCount,
             double connectionDensity) {
-        return new MMNEATGenome(rnd, pop, inputCount, outputCount, connectionDensity);
+        return new MMNEATGenome(rnd, pop, outputCount, connectionDensity);
     }
 
     @Override

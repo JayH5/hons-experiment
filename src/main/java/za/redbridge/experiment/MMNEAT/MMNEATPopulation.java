@@ -7,6 +7,8 @@ import org.encog.neural.neat.training.NEATInnovationList;
 
 import java.util.Random;
 
+import za.redbridge.experiment.sensor.SensorType;
+
 /**
  * Created by jamie on 2014/09/08.
  */
@@ -29,15 +31,13 @@ public class MMNEATPopulation extends NEATPopulation {
      * Construct a starting NEAT population. This does not generate the initial
      * random population of genomes.
      *
-     * @param inputCount
-     *            The input neuron count.
      * @param outputCount
      *            The output neuron count.
      * @param populationSize
      *            The population size.
      */
-    public MMNEATPopulation(int inputCount, int outputCount, int populationSize) {
-        super(inputCount, outputCount, populationSize);
+    public MMNEATPopulation(int outputCount, int populationSize) {
+        super(SensorType.values().length, outputCount, populationSize);
     }
 
     @Override

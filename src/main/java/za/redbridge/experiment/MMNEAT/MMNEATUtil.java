@@ -25,10 +25,9 @@ import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
  */
 public final class MMNEATUtil {
 
-    public static TrainEA constructNEATTrainer(CalculateScore calculateScore, int inputCount,
-            int outputCount, int populationSize) {
-        final MMNEATPopulation pop = new MMNEATPopulation(inputCount, outputCount,
-                populationSize);
+    public static TrainEA constructNEATTrainer(CalculateScore calculateScore, int outputCount,
+            int populationSize) {
+        final MMNEATPopulation pop = new MMNEATPopulation(outputCount, populationSize);
         pop.reset();
         return constructNEATTrainer(pop, calculateScore);
     }
