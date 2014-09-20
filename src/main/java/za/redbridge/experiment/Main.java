@@ -107,10 +107,10 @@ public class Main {
 
     private static class Args {
         @Parameter(names = "-c", description = "Simulation config file to load")
-        private String configFile = null;
+        private String configFile = "config/simulation.yml";
 
         @Parameter(names = "-i", description = "Number of simulation iterations to train for")
-        private int numIterations = 500;
+        private int numIterations = 150;
 
         @Parameter(names = "-p", description = "Initial population size")
         private int populationSize = 50;
