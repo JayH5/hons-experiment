@@ -6,7 +6,6 @@ import org.encog.ml.ea.opp.selection.TruncationSelection;
 import org.encog.ml.ea.train.basic.TrainEA;
 import org.encog.neural.neat.training.opp.NEATCrossover;
 import org.encog.neural.neat.training.opp.NEATMutateAddLink;
-import org.encog.neural.neat.training.opp.NEATMutateAddNode;
 import org.encog.neural.neat.training.opp.NEATMutateRemoveLink;
 import org.encog.neural.neat.training.opp.NEATMutateWeights;
 import org.encog.neural.neat.training.opp.links.MutatePerturbLinkWeight;
@@ -15,6 +14,7 @@ import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
 import org.encog.neural.neat.training.species.OriginalNEATSpeciation;
 
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
@@ -83,7 +83,7 @@ public final class MMNEATUtil {
         // Add all the operators, probability should sum to 1
         result.addOperation(0.5, new NEATCrossover());
         result.addOperation(0.454, weightMutation);
-        result.addOperation(0.0005, new NEATMutateAddNode());
+        result.addOperation(0.0005, new MMNEATMutateAddNode());
         result.addOperation(0.005, new NEATMutateAddLink());
         result.addOperation(0.0005, new NEATMutateRemoveLink());
 
