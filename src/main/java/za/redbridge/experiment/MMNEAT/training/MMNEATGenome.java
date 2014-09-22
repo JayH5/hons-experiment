@@ -23,6 +23,10 @@ public class MMNEATGenome extends NEATGenome {
     private static final long serialVersionUID = 7694155481242674578L;
 
     private final List<MMNEATNeuronGene> inputsList = new ArrayList<>();
+    private final List<MMNEATNeuronGene> outputsList = new ArrayList<>();
+    private final List<MMNEATNeuronGene> hiddenList = new ArrayList<>();
+
+    private MMNEATNeuronGene biasGene;
 
     /**
      * Construct a genome by copying another.
@@ -44,11 +48,9 @@ public class MMNEATGenome extends NEATGenome {
         for (NEATNeuronGene oldNeuron : other.getNeuronsChromosome()) {
             final MMNEATNeuronGene newGene = new MMNEATNeuronGene((MMNEATNeuronGene) oldNeuron);
             neurons.add(newGene);
-
-            if (newGene.getNeuronType() == NEATNeuronType.Input) {
-                inputsList.add(newGene);
-            }
         }
+
+        initNeuronLists();
 
         // copy links
         final List<NEATLinkGene> links = getLinksChromosome();
@@ -91,9 +93,7 @@ public class MMNEATGenome extends NEATGenome {
         List<NEATNeuronGene> ourNeurons = getNeuronsChromosome();
         ourNeurons.addAll(neurons);
 
-        neurons.stream().filter(o -> o.getNeuronType() == NEATNeuronType.Input)
-                .map(o -> (MMNEATNeuronGene) o)
-                .forEach(inputsList::add);
+        initNeuronLists();
     }
 
     /**
@@ -142,8 +142,6 @@ public class MMNEATGenome extends NEATGenome {
 
             SensorType sensorType = sensorTypes[i];
             gene.setInputSensorType(sensorType);
-
-            inputsList.add(gene);
         }
 
         // then outputs
@@ -152,6 +150,8 @@ public class MMNEATGenome extends NEATGenome {
                     i + inputCount + 1, innovationID++);
             neurons.add(gene);
         }
+
+        initNeuronLists();
 
         // and now links
         List<NEATLinkGene> links = getLinksChromosome();
@@ -174,6 +174,29 @@ public class MMNEATGenome extends NEATGenome {
 
     }
 
+    private void initNeuronLists() {
+        final List<NEATNeuronGene> neurons = getNeuronsChromosome();
+        for (NEATNeuronGene neuron : neurons) {
+            MMNEATNeuronGene neuronGene = (MMNEATNeuronGene) neuron;
+            switch (neuron.getNeuronType()) {
+                case Input:
+                    inputsList.add(neuronGene);
+                    break;
+                case Output:
+                    outputsList.add(neuronGene);
+                    break;
+                case Hidden:
+                    hiddenList.add(neuronGene);
+                    break;
+                case Bias:
+                    biasGene = neuronGene;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     public List<MMNEATNeuronGene> getInputNeuronsChromosome() {
         return inputsList;
     }
@@ -183,12 +206,24 @@ public class MMNEATGenome extends NEATGenome {
             throw new IllegalArgumentException("Not an input neuron");
         }
 
-        getNeuronsChromosome().add(getInputCount() + 1, inputNeuron);
+        getNeuronsChromosome().add(inputNeuron);
         getInputNeuronsChromosome().add(inputNeuron);
     }
 
     @Override
     public int getInputCount() {
         return inputsList.size();
+    }
+
+    public MMNEATNeuronGene getBiasGene() {
+        return biasGene;
+    }
+
+    public List<MMNEATNeuronGene> getOutputNeuronsChromosome() {
+        return outputsList;
+    }
+
+    public List<MMNEATNeuronGene> getHiddenNeuronsChromosome() {
+        return hiddenList;
     }
 }
