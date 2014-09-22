@@ -2,14 +2,17 @@ package za.redbridge.experiment;
 
 import org.encog.ml.CalculateScore;
 import org.encog.ml.MLMethod;
+import org.encog.neural.neat.NEATNetwork;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
+import za.redbridge.experiment.khepera.KheperaIIIPhenotype;
 import za.redbridge.simulator.Simulation;
 import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
 import za.redbridge.simulator.factories.HomogeneousRobotFactory;
 import za.redbridge.simulator.factories.RobotFactory;
+import za.redbridge.simulator.phenotype.Phenotype;
 
 /**
  * Created by jamie on 2014/09/09.
@@ -27,10 +30,7 @@ public class ScoreCalculator implements CalculateScore {
 
     @Override
     public double calculateScore(MLMethod method) {
-        MMNEATNetwork network = (MMNEATNetwork) method;
-
-        // Create the robot and resource factories
-        RobotFactory robotFactory = new HomogeneousRobotFactory(new MMNEATPhenotype(network),
+        RobotFactory robotFactory = new HomogeneousRobotFactory(getPhenotypeFromMethod(method),
                 simConfig.getRobotMass(), simConfig.getRobotRadius(), simConfig.getRobotColour(),
                 simConfig.getObjectsRobots());
 
@@ -45,9 +45,21 @@ public class ScoreCalculator implements CalculateScore {
         return score;
     }
 
-    public void demo(MMNEATNetwork network) {
+    private static Phenotype getPhenotypeFromMethod(MLMethod method) {
+        if (method instanceof MMNEATNetwork) {
+            MMNEATNetwork network = (MMNEATNetwork) method;
+            return new MMNEATPhenotype(network);
+        } else if (method instanceof NEATNetwork) {
+            NEATNetwork network = (NEATNetwork) method;
+            return new KheperaIIIPhenotype(network);
+        } else {
+            throw new IllegalArgumentException("Unknown MLMethod type");
+        }
+    }
+
+    public void demo(MLMethod method) {
         // Create the robot and resource factories
-        RobotFactory robotFactory = new HomogeneousRobotFactory(new MMNEATPhenotype(network),
+        RobotFactory robotFactory = new HomogeneousRobotFactory(getPhenotypeFromMethod(method),
                 simConfig.getRobotMass(), simConfig.getRobotRadius(), simConfig.getRobotColour(),
                 simConfig.getObjectsRobots());
 

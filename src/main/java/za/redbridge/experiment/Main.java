@@ -5,6 +5,9 @@ import com.beust.jcommander.Parameter;
 
 import org.encog.Encog;
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
+import org.encog.neural.neat.NEATNetwork;
+import org.encog.neural.neat.NEATPopulation;
+import org.encog.neural.neat.NEATUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.util.Date;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
+import za.redbridge.experiment.khepera.KheperaIIIPhenotype;
 import za.redbridge.simulator.config.SimConfig;
 
 /**
@@ -46,12 +50,23 @@ public class Main {
             return;
         }
 
-        MMNEATPopulation population = new MMNEATPopulation(2, options.populationSize);
+        final NEATPopulation population;
+        if (!options.control) {
+            population = new MMNEATPopulation(2, options.populationSize);
+        } else {
+            population =
+                    new NEATPopulation(KheperaIIIPhenotype.NUM_SENSORS, 2, options.populationSize);
+        }
         population.reset();
 
         System.out.println("Population initialized");
 
-        EvolutionaryAlgorithm train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
+        final EvolutionaryAlgorithm train;
+        if (!options.control) {
+            train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
+        } else {
+            train = NEATUtil.constructNEATTrainer(population, calculateScore);
+        }
 
         String date = getDateFolderName();
 
@@ -64,7 +79,7 @@ public class Main {
                     + totalScore / options.populationSize);
 
             // Save the network
-            MMNEATNetwork network = (MMNEATNetwork) train.getCODEC().decode(train.getBestGenome());
+            NEATNetwork network = (NEATNetwork) train.getCODEC().decode(train.getBestGenome());
             saveNetwork(network, "epoch " + train.getIteration(), date);
         }
 
@@ -77,7 +92,7 @@ public class Main {
         return df.format(new Date());
     }
 
-    private static void saveNetwork(MMNEATNetwork network, String name, String folder)
+    private static void saveNetwork(NEATNetwork network, String name, String folder)
             throws IOException {
         File dir = new File("networks/" + folder);
         if (!dir.exists() && !dir.mkdirs()) {
@@ -117,5 +132,8 @@ public class Main {
 
         @Parameter(names = "--demo", description = "Show a GUI demo of a given genome")
         private String genomePath = null;
+
+        @Parameter(names = "--control", description = "Run with the control case")
+        private boolean control = false;
     }
 }

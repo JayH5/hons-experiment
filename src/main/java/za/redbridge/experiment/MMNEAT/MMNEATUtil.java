@@ -4,6 +4,7 @@ import org.encog.ml.CalculateScore;
 import org.encog.ml.ea.opp.CompoundOperator;
 import org.encog.ml.ea.opp.selection.TruncationSelection;
 import org.encog.ml.ea.train.basic.TrainEA;
+import org.encog.neural.neat.NEATPopulation;
 import org.encog.neural.neat.training.opp.NEATMutateAddLink;
 import org.encog.neural.neat.training.opp.NEATMutateRemoveLink;
 import org.encog.neural.neat.training.opp.NEATMutateWeights;
@@ -38,7 +39,7 @@ public final class MMNEATUtil {
      * @param calculateScore The score function.
      * @return The NEAT EA trainer.
      */
-    public static TrainEA constructNEATTrainer(MMNEATPopulation population,
+    public static TrainEA constructNEATTrainer(NEATPopulation population,
             CalculateScore calculateScore) {
         final TrainEA result = new TrainEA(population, calculateScore);
 
