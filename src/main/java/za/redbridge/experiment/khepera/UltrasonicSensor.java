@@ -40,6 +40,8 @@ public class UltrasonicSensor extends AgentSensor {
                 // Objects closer than the minimum range just return 1.0
                 output.add(1.0);
             }
+        } else {
+            output.add(0.0);
         }
     }
 
