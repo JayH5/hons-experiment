@@ -1,10 +1,9 @@
 package za.redbridge.experiment.sensor;
 
-import org.jbox2d.dynamics.Fixture;
-
 import java.awt.Color;
 import java.awt.Paint;
 
+import za.redbridge.simulator.object.PhysicalObject;
 import za.redbridge.simulator.object.ResourceObject;
 import za.redbridge.simulator.sensor.ProximityAgentSensor;
 
@@ -33,7 +32,7 @@ public class ResourceSensor extends ProximityAgentSensor {
     }
 
     @Override
-    public boolean isRelevantObject(Fixture otherFixture) {
-        return otherFixture.getBody().getUserData() instanceof ResourceObject;
+    public boolean isRelevantObject(PhysicalObject object) {
+        return object instanceof ResourceObject;
     }
 }

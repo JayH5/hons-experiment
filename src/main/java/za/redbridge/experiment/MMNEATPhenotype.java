@@ -12,8 +12,6 @@ import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.SensorMorphology;
 import za.redbridge.simulator.phenotype.Phenotype;
 import za.redbridge.simulator.sensor.AgentSensor;
-import za.redbridge.simulator.sensor.ProximityAgentSensor;
-import za.redbridge.simulator.sensor.SensorReading;
 
 /**
  * Created by jamie on 2014/09/09.
@@ -45,9 +43,9 @@ public class MMNEATPhenotype implements Phenotype {
     }
 
     @Override
-    public Double2D step(List<SensorReading> sensorReadings) {
+    public Double2D step(List<List<Double>> sensorReadings) {
         for (int i = 0; i < inputs.length; i++) {
-            inputs[i] = sensorReadings.get(i).getValues().get(0);
+            inputs[i] = sensorReadings.get(i).get(0);
         }
 
         MLData input = new BasicMLData(inputs);
