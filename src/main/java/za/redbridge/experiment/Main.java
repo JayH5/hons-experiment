@@ -23,8 +23,8 @@ import java.util.Date;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
-import za.redbridge.experiment.khepera.KheperaIIIPhenotype;
 import za.redbridge.simulator.config.SimConfig;
+import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
 
 /**
  * Created by jamie on 2014/09/09.
@@ -42,7 +42,7 @@ public class Main {
             simConfig = new SimConfig();
         }
 
-        ScoreCalculator calculateScore = new ScoreCalculator(simConfig);
+        ScoreCalculator calculateScore = new ScoreCalculator(simConfig, options.simulationRuns);
 
         if (options.genomePath != null && !options.genomePath.isEmpty()) {
             MMNEATNetwork network = loadNetwork(options.genomePath);
@@ -129,6 +129,9 @@ public class Main {
 
         @Parameter(names = "-p", description = "Initial population size")
         private int populationSize = 50;
+
+        @Parameter(names = "--sim-runs", description = "Number of simulation runs per iteration")
+        private int simulationRuns = 3;
 
         @Parameter(names = "--demo", description = "Show a GUI demo of a given genome")
         private String genomePath = null;

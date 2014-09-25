@@ -6,7 +6,6 @@ import org.encog.neural.neat.NEATNetwork;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
-import za.redbridge.experiment.khepera.KheperaIIIPhenotype;
 import za.redbridge.simulator.Simulation;
 import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
@@ -20,12 +19,14 @@ import za.redbridge.simulator.phenotype.Phenotype;
 public class ScoreCalculator implements CalculateScore {
 
     private final SimConfig simConfig;
+    private final int simulationRuns;
 
     private final Object statsLock = new Object();
     private double epochTotalScore;
 
-    public ScoreCalculator(SimConfig simConfig) {
+    public ScoreCalculator(SimConfig simConfig, int simulationRuns) {
         this.simConfig = simConfig;
+        this.simulationRuns = simulationRuns;
     }
 
     @Override
@@ -36,10 +37,12 @@ public class ScoreCalculator implements CalculateScore {
 
         // Create the simulation and run it
         Simulation simulation = new Simulation(simConfig, robotFactory);
-        simulation.run();
+        for (int i = 0; i < simulationRuns; i++) {
+            simulation.run();
+        }
 
         // Get the fitness and update the total score
-        double score = simulation.getFitness();
+        double score = simulation.getFitness() / simulationRuns;
         incrementEpochScore(score);
 
         return score;
@@ -51,7 +54,7 @@ public class ScoreCalculator implements CalculateScore {
             return new MMNEATPhenotype(network);
         } else if (method instanceof NEATNetwork) {
             NEATNetwork network = (NEATNetwork) method;
-            return new KheperaIIIPhenotype(network);
+            return new NEATKheperaIIIPhenotype(network);
         } else {
             throw new IllegalArgumentException("Unknown MLMethod type");
         }
