@@ -23,6 +23,8 @@ public class ScoreCalculator implements CalculateScore {
 
     private final Object statsLock = new Object();
     private double epochTotalScore;
+    private double epochBestScore;
+    private int numSimulationsRun;
 
     public ScoreCalculator(SimConfig simConfig, int simulationRuns) {
         this.simConfig = simConfig;
@@ -39,11 +41,12 @@ public class ScoreCalculator implements CalculateScore {
         Simulation simulation = new Simulation(simConfig, robotFactory);
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
+            incrementSimulationsRun();
         }
 
         // Get the fitness and update the total score
         double score = simulation.getFitness() / simulationRuns;
-        incrementEpochScore(score);
+        recordEpochScore(score);
 
         return score;
     }
@@ -76,20 +79,39 @@ public class ScoreCalculator implements CalculateScore {
         console.setVisible(true);
     }
 
-    public void resetEpochScore() {
+    private void recordEpochScore(double score) {
         synchronized (statsLock) {
-            epochTotalScore = 0.0;
+            epochTotalScore += score;
+            if (score > epochBestScore) {
+                epochBestScore = score;
+            }
         }
     }
 
-    private void incrementEpochScore(double amount) {
+    private void incrementSimulationsRun() {
         synchronized (statsLock) {
-            epochTotalScore += amount;
+            numSimulationsRun++;
         }
     }
 
-    public double getEpochTotalScore() {
-        return epochTotalScore;
+    public double getEpochAverageScore() {
+        synchronized (statsLock) {
+            return epochTotalScore / numSimulationsRun;
+        }
+    }
+
+    public double getEpochBestScore() {
+        synchronized (statsLock) {
+            return epochBestScore;
+        }
+    }
+
+    public void resetScoreCounters() {
+        synchronized (statsLock) {
+            epochTotalScore = 0;
+            epochBestScore = 0;
+            numSimulationsRun = 0;
+        }
     }
 
     @Override

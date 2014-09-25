@@ -71,12 +71,14 @@ public class Main {
         String date = getDateFolderName();
 
         for (int i = 0; i < options.numIterations; i++) {
-            calculateScore.resetEpochScore();
             train.iteration();
 
-            double totalScore = calculateScore.getEpochTotalScore();
-            System.out.println("Epoch #" + train.getIteration() + " Average score: "
-                    + totalScore / options.populationSize);
+            double averageScore = calculateScore.getEpochAverageScore();
+            double bestScore = calculateScore.getEpochBestScore();
+            System.out.println("Epoch #" + train.getIteration() + ", average score: "
+                    + averageScore + ", best score: " + bestScore);
+
+            calculateScore.resetScoreCounters();
 
             // Save the network
             NEATNetwork network = (NEATNetwork) train.getCODEC().decode(train.getBestGenome());
