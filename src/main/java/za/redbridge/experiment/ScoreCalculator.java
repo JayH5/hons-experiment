@@ -24,7 +24,7 @@ public class ScoreCalculator implements CalculateScore {
     private final Object statsLock = new Object();
     private double epochTotalScore;
     private double epochBestScore;
-    private int numSimulationsRun;
+    private int epochQuantity;
 
     public ScoreCalculator(SimConfig simConfig, int simulationRuns) {
         this.simConfig = simConfig;
@@ -43,12 +43,13 @@ public class ScoreCalculator implements CalculateScore {
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
             fitness += simulation.getFitness();
-            incrementSimulationsRun();
         }
 
         // Get the fitness and update the total score
         double score = fitness / simulationRuns;
         recordEpochScore(score);
+
+        System.out.println("Score calculation completed: " + score);
 
         return score;
     }
@@ -84,21 +85,16 @@ public class ScoreCalculator implements CalculateScore {
     private void recordEpochScore(double score) {
         synchronized (statsLock) {
             epochTotalScore += score;
+            epochQuantity++;
             if (score > epochBestScore) {
                 epochBestScore = score;
             }
         }
     }
 
-    private void incrementSimulationsRun() {
-        synchronized (statsLock) {
-            numSimulationsRun++;
-        }
-    }
-
     public double getEpochAverageScore() {
         synchronized (statsLock) {
-            return epochTotalScore / numSimulationsRun;
+            return epochTotalScore / epochQuantity;
         }
     }
 
@@ -112,7 +108,7 @@ public class ScoreCalculator implements CalculateScore {
         synchronized (statsLock) {
             epochTotalScore = 0;
             epochBestScore = 0;
-            numSimulationsRun = 0;
+            epochQuantity = 0;
         }
     }
 
