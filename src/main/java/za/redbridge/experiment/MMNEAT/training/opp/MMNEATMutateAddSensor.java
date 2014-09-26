@@ -81,12 +81,10 @@ public class MMNEATMutateAddSensor extends NEATMutation {
 
     private static SensorType pickRandomSensorType(Random rnd) {
         double random = rnd.nextDouble();
-        if (random < 0.4) {
-            return SensorType.COLLISION;
-        } else if (random < 0.8) {
-            return SensorType.RESOURCE;
+        if (random < 0.3) {
+            return SensorType.ULTRASONIC;
         } else {
-            return SensorType.TARGET_AREA;
+            return SensorType.PROXIMITY;
         }
     }
 
