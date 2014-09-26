@@ -206,7 +206,8 @@ public class MMNEATGenome extends NEATGenome {
             throw new IllegalArgumentException("Not an input neuron");
         }
 
-        getNeuronsChromosome().add(inputNeuron);
+        getNeuronsChromosome().add(getInputCount() + 1, inputNeuron);
+
         getInputNeuronsChromosome().add(inputNeuron);
     }
 

@@ -39,13 +39,15 @@ public class ScoreCalculator implements CalculateScore {
 
         // Create the simulation and run it
         Simulation simulation = new Simulation(simConfig, robotFactory);
+        double fitness = 0;
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
+            fitness += simulation.getFitness();
             incrementSimulationsRun();
         }
 
         // Get the fitness and update the total score
-        double score = simulation.getFitness() / simulationRuns;
+        double score = fitness / simulationRuns;
         recordEpochScore(score);
 
         return score;

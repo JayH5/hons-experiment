@@ -89,12 +89,12 @@ public class Main {
         Encog.getInstance().shutdown();
     }
 
-    private static String getDateFolderName() {
+    static String getDateFolderName() {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         return df.format(new Date());
     }
 
-    private static void saveNetwork(NEATNetwork network, String name, String folder)
+    static void saveNetwork(NEATNetwork network, String name, String folder)
             throws IOException {
         File dir = new File("networks/" + folder);
         if (!dir.exists() && !dir.mkdirs()) {
@@ -107,7 +107,7 @@ public class Main {
         }
     }
 
-    private static MMNEATNetwork loadNetwork(String filepath) {
+    static MMNEATNetwork loadNetwork(String filepath) {
         MMNEATNetwork network = null;
         Path path = Paths.get(filepath);
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(path))) {
