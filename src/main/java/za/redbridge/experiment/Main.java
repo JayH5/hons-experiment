@@ -8,6 +8,8 @@ import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 import org.encog.neural.neat.NEATNetwork;
 import org.encog.neural.neat.NEATPopulation;
 import org.encog.neural.neat.NEATUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +33,13 @@ import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
  */
 public class Main {
 
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) throws IOException {
         Args options = new Args();
         new JCommander(options, args);
+
+        log.info(options.toString());
 
         SimConfig simConfig;
         if (options.configFile != null && !options.configFile.isEmpty()) {
@@ -59,7 +65,7 @@ public class Main {
         }
         population.reset();
 
-        System.out.println("Population initialized");
+        log.info("Population initialized");
 
         final EvolutionaryAlgorithm train;
         if (!options.control) {
@@ -75,7 +81,7 @@ public class Main {
 
             double averageScore = calculateScore.getEpochAverageScore();
             double bestScore = calculateScore.getEpochBestScore();
-            System.out.println("Epoch #" + train.getIteration() + ", average score: "
+            log.info("Epoch #" + train.getIteration() + ", average score: "
                     + averageScore + ", best score: " + bestScore);
 
             calculateScore.resetScoreCounters();
@@ -85,7 +91,7 @@ public class Main {
             saveNetwork(network, "epoch " + train.getIteration(), date);
         }
 
-        System.out.println("Training complete");
+        log.info("Training complete");
         Encog.getInstance().shutdown();
     }
 
@@ -140,5 +146,15 @@ public class Main {
 
         @Parameter(names = "--control", description = "Run with the control case")
         private boolean control = false;
+
+        @Override
+        public String toString() {
+            return "Options: \n"
+                    + "\tConfig file path: " + configFile + "\n"
+                    + "\tNumber of simulation steps: " + numIterations + "\n"
+                    + "\tNumber of simulation tests per iteration: " + simulationRuns + "\n"
+                    + "\tDemo network config path: " + genomePath + "\n"
+                    + "\tRunning with the control case: " + control;
+        }
     }
 }

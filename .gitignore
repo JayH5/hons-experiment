@@ -20,3 +20,6 @@ build/
 
 # Networks
 networks/
+
+# Logs
+*.log

@@ -3,6 +3,8 @@ package za.redbridge.experiment;
 import org.encog.ml.CalculateScore;
 import org.encog.ml.MLMethod;
 import org.encog.neural.neat.NEATNetwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
@@ -17,6 +19,8 @@ import za.redbridge.simulator.phenotype.Phenotype;
  * Created by jamie on 2014/09/09.
  */
 public class ScoreCalculator implements CalculateScore {
+
+    private static final Logger log = LoggerFactory.getLogger(ScoreCalculator.class);
 
     private final SimConfig simConfig;
     private final int simulationRuns;
@@ -49,7 +53,7 @@ public class ScoreCalculator implements CalculateScore {
         double score = fitness / simulationRuns;
         recordEpochScore(score);
 
-        System.out.println("Score calculation completed: " + score);
+        log.info("Score calculation completed: " + score);
 
         return score;
     }
