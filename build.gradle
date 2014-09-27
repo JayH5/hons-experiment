@@ -1,15 +1,15 @@
 apply plugin: 'java'
 
 repositories {
-  mavenCentral()
-  mavenLocal()
+    mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-  compile 'za.redbridge.simulator:simulator:0.1-SNAPSHOT'
-  compile 'org.encog:encog-core:3.3.0-SNAPSHOT'
-  compile 'com.beust:jcommander:1.35'
+    compile 'za.redbridge.simulator:simulator:0.1-SNAPSHOT'
+    compile 'org.encog:encog-core:3.3.0-SNAPSHOT'
+    compile 'com.beust:jcommander:1.35'
 }
 
-apply plugin:'application'
-mainClassName = "za.redbridge.experiment.Main"
+apply plugin: 'application'
+mainClassName = 'za.redbridge.experiment.Main'
