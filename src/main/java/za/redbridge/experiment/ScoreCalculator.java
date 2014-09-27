@@ -20,6 +20,8 @@ import za.redbridge.simulator.phenotype.Phenotype;
  */
 public class ScoreCalculator implements CalculateScore {
 
+    private static final double TIME_BONUS_MULTIPLIER = 2.0;
+
     private static final Logger log = LoggerFactory.getLogger(ScoreCalculator.class);
 
     private final SimConfig simConfig;
@@ -43,10 +45,12 @@ public class ScoreCalculator implements CalculateScore {
 
         // Create the simulation and run it
         Simulation simulation = new Simulation(simConfig, robotFactory);
+        simulation.setStopOnceCollected(true);
         double fitness = 0;
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
             fitness += simulation.getFitness();
+            fitness += timeBonus(simulation.getStepNumber());
         }
 
         // Get the fitness and update the total score
@@ -56,6 +60,17 @@ public class ScoreCalculator implements CalculateScore {
         log.info("Score calculation completed: " + score);
 
         return score;
+    }
+
+    private double timeBonus(long steps) {
+        double reward = 0.0;
+        if (steps < simConfig.getSimulationIterations()) {
+            reward = 1.0 - (double) steps / simConfig.getSimulationIterations();
+            reward *= TIME_BONUS_MULTIPLIER;
+
+            log.info("Time bonus awarded: " + reward + " (" + steps + " steps)");
+        }
+        return reward;
     }
 
     private static Phenotype getPhenotypeFromMethod(MLMethod method) {
