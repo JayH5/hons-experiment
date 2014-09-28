@@ -1,5 +1,7 @@
 package za.redbridge.experiment;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.encog.ml.CalculateScore;
 import org.encog.ml.MLMethod;
 import org.encog.neural.neat.NEATNetwork;
@@ -27,10 +29,7 @@ public class ScoreCalculator implements CalculateScore {
     private final SimConfig simConfig;
     private final int simulationRuns;
 
-    private final Object statsLock = new Object();
-    private double epochTotalScore;
-    private double epochBestScore;
-    private int epochQuantity;
+    private DescriptiveStatistics statistics = new SynchronizedDescriptiveStatistics();
 
     public ScoreCalculator(SimConfig simConfig, int simulationRuns) {
         this.simConfig = simConfig;
@@ -55,9 +54,9 @@ public class ScoreCalculator implements CalculateScore {
 
         // Get the fitness and update the total score
         double score = fitness / simulationRuns;
-        recordEpochScore(score);
+        statistics.addValue(score);
 
-        log.info("Score calculation completed: " + score);
+        log.debug("Score calculation completed: " + score);
 
         return score;
     }
@@ -68,7 +67,7 @@ public class ScoreCalculator implements CalculateScore {
             reward = 1.0 - (double) steps / simConfig.getSimulationIterations();
             reward *= TIME_BONUS_MULTIPLIER;
 
-            log.info("Time bonus awarded: " + reward + " (" + steps + " steps)");
+            log.debug("Time bonus awarded: " + reward + " (" + steps + " steps)");
         }
         return reward;
     }
@@ -101,34 +100,8 @@ public class ScoreCalculator implements CalculateScore {
         console.setVisible(true);
     }
 
-    private void recordEpochScore(double score) {
-        synchronized (statsLock) {
-            epochTotalScore += score;
-            epochQuantity++;
-            if (score > epochBestScore) {
-                epochBestScore = score;
-            }
-        }
-    }
-
-    public double getEpochAverageScore() {
-        synchronized (statsLock) {
-            return epochTotalScore / epochQuantity;
-        }
-    }
-
-    public double getEpochBestScore() {
-        synchronized (statsLock) {
-            return epochBestScore;
-        }
-    }
-
-    public void resetScoreCounters() {
-        synchronized (statsLock) {
-            epochTotalScore = 0;
-            epochBestScore = 0;
-            epochQuantity = 0;
-        }
+    public DescriptiveStatistics getStatistics() {
+        return statistics;
     }
 
     @Override

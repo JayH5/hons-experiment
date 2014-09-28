@@ -11,24 +11,20 @@ import org.encog.neural.neat.NEATUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
 import za.redbridge.simulator.config.SimConfig;
 import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
 
 /**
+ * Entry point for the experiment platform.
+ *
  * Created by jamie on 2014/09/09.
  */
 public class Main {
@@ -51,7 +47,7 @@ public class Main {
         ScoreCalculator calculateScore = new ScoreCalculator(simConfig, options.simulationRuns);
 
         if (options.genomePath != null && !options.genomePath.isEmpty()) {
-            MMNEATNetwork network = loadNetwork(options.genomePath);
+            NEATNetwork network = loadNetwork(options.genomePath);
             calculateScore.demo(network);
             return;
         }
@@ -65,7 +61,7 @@ public class Main {
         }
         population.reset();
 
-        log.info("Population initialized");
+        log.debug("Population initialized");
 
         final EvolutionaryAlgorithm train;
         if (!options.control) {
@@ -74,55 +70,23 @@ public class Main {
             train = NEATUtil.constructNEATTrainer(population, calculateScore);
         }
 
-        String date = getDateFolderName();
-
+        final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
         for (int i = 0; i < options.numIterations; i++) {
             train.iteration();
-
-            double averageScore = calculateScore.getEpochAverageScore();
-            double bestScore = calculateScore.getEpochBestScore();
-            log.info("Epoch #" + train.getIteration() + ", average score: "
-                    + averageScore + ", best score: " + bestScore);
-
-            calculateScore.resetScoreCounters();
-
-            // Save the network
-            NEATNetwork network = (NEATNetwork) train.getCODEC().decode(train.getBestGenome());
-            saveNetwork(network, "epoch " + train.getIteration(), date);
+            statsRecorder.recordTrainingIteration();
         }
 
-        log.info("Training complete");
+        log.debug("Training complete");
         Encog.getInstance().shutdown();
     }
 
-    static String getDateFolderName() {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        return df.format(new Date());
-    }
-
-    static void saveNetwork(NEATNetwork network, String name, String folder)
-            throws IOException {
-        File dir = new File("networks/" + folder);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new IOException("Failed to create directory structure for networks");
-        }
-
-        Path path = Paths.get(new File(dir, name).toURI());
-        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
-            out.writeObject(network);
-        }
-    }
-
-    static MMNEATNetwork loadNetwork(String filepath) {
-        MMNEATNetwork network = null;
+    static NEATNetwork loadNetwork(String filepath) {
+        NEATNetwork network = null;
         Path path = Paths.get(filepath);
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(path))) {
-            network = (MMNEATNetwork) in.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.err.println("Class not found!");
-            e.printStackTrace();
+            network = (NEATNetwork) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            log.error("Unable to load network from file", e);
         }
 
         return network;
@@ -152,6 +116,7 @@ public class Main {
             return "Options: \n"
                     + "\tConfig file path: " + configFile + "\n"
                     + "\tNumber of simulation steps: " + numIterations + "\n"
+                    + "\tPopulation size: " + populationSize + "\n"
                     + "\tNumber of simulation tests per iteration: " + simulationRuns + "\n"
                     + "\tDemo network config path: " + genomePath + "\n"
                     + "\tRunning with the control case: " + control;
