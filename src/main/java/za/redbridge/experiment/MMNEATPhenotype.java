@@ -19,7 +19,7 @@ import za.redbridge.simulator.sensor.AgentSensor;
 public class MMNEATPhenotype implements Phenotype {
 
     private final MMNEATNetwork network;
-    private final double[] inputs;
+    private final MLData input;
 
     private final List<AgentSensor> sensors;
 
@@ -34,7 +34,7 @@ public class MMNEATPhenotype implements Phenotype {
             sensors.add(morphology.getSensor(i));
         }
 
-        inputs = new double[numSensors];
+        input = new BasicMLData(numSensors);
     }
 
     @Override
@@ -44,11 +44,11 @@ public class MMNEATPhenotype implements Phenotype {
 
     @Override
     public Double2D step(List<List<Double>> sensorReadings) {
-        for (int i = 0; i < inputs.length; i++) {
-            inputs[i] = sensorReadings.get(i).get(0);
+        final MLData input = this.input;
+        for (int i = 0, n = input.size(); i < n; i++) {
+            input.setData(i, sensorReadings.get(i).get(0));
         }
 
-        MLData input = new BasicMLData(inputs);
         MLData output = network.compute(input);
 
         return new Double2D(output.getData(0) * 2.0 - 1.0, output.getData(1) * 2.0 - 1.0);
