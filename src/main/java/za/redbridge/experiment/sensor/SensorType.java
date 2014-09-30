@@ -8,8 +8,8 @@ import za.redbridge.simulator.sensor.AgentSensor;
 public enum SensorType {
 
     COLLISION,
-    RESOURCE,
-    TARGET_AREA;
+    RESOURCE;
+    //TARGET_AREA;
 
     public AgentSensor getSensor(float bearing, float orientation) {
         switch (this) {
@@ -17,8 +17,8 @@ public enum SensorType {
                 return new CollisionSensor(bearing, orientation);
             case RESOURCE:
                 return new ResourceSensor(bearing, orientation);
-            case TARGET_AREA:
-                return new TargetAreaSensor(bearing, orientation);
+            /*case TARGET_AREA:
+                return new TargetAreaSensor(bearing, orientation);*/
         }
         return null;
     }
