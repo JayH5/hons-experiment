@@ -1,6 +1,5 @@
 package za.redbridge.experiment;
 
-import org.encog.ml.MLInput;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.neat.NEATNetwork;
@@ -17,13 +16,22 @@ import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
  */
 public class NEATKheperaIIIPhenotype extends KheperaIIIPhenotype {
 
-    private final MLData input = new BasicMLData(NUM_SENSORS);
+    private final MLData input;
 
     private final NEATNetwork network;
 
+    private static final Configuration DEFAULT_CONFIGURATION = new Configuration();
+    static {
+        DEFAULT_CONFIGURATION.enableProximitySensors10Degrees = false;
+        DEFAULT_CONFIGURATION.enableProximitySensors75Degrees = false;
+        DEFAULT_CONFIGURATION.enableProximitySensors140Degrees = false;
+        DEFAULT_CONFIGURATION.enableUltrasonicSensors40Degrees = false;
+    }
+
     public NEATKheperaIIIPhenotype(NEATNetwork network) {
-        super();
+        super(DEFAULT_CONFIGURATION);
         this.network = network;
+        input = new BasicMLData(DEFAULT_CONFIGURATION.getNumberOfSensors());
     }
 
     @Override
@@ -46,4 +54,9 @@ public class NEATKheperaIIIPhenotype extends KheperaIIIPhenotype {
     public NEATKheperaIIIPhenotype clone() {
         return new NEATKheperaIIIPhenotype(network);
     }
+
+    public static int getNumberOfSensors() {
+        return DEFAULT_CONFIGURATION.getNumberOfSensors();
+    }
+
 }

@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
 import za.redbridge.simulator.config.SimConfig;
-import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
 
 /**
  * Entry point for the experiment platform.
@@ -56,8 +55,8 @@ public class Main {
         if (!options.control) {
             population = new MMNEATPopulation(2, options.populationSize);
         } else {
-            population =
-                    new NEATPopulation(KheperaIIIPhenotype.NUM_SENSORS, 2, options.populationSize);
+            population = new NEATPopulation(NEATKheperaIIIPhenotype.getNumberOfSensors(), 2,
+                    options.populationSize);
         }
         population.reset();
 
