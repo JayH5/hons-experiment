@@ -22,10 +22,10 @@ public class NEATKheperaIIIPhenotype extends KheperaIIIPhenotype {
 
     private static final Configuration DEFAULT_CONFIGURATION = new Configuration();
     static {
-        DEFAULT_CONFIGURATION.enableProximitySensors10Degrees = false;
-        DEFAULT_CONFIGURATION.enableProximitySensors75Degrees = false;
-        DEFAULT_CONFIGURATION.enableProximitySensors140Degrees = false;
-        DEFAULT_CONFIGURATION.enableUltrasonicSensors40Degrees = false;
+        DEFAULT_CONFIGURATION.enableProximitySensors40Degrees = true;
+        DEFAULT_CONFIGURATION.enableProximitySensorBottom = true;
+        DEFAULT_CONFIGURATION.enableUltrasonicSensor0Degrees = true;
+        DEFAULT_CONFIGURATION.enableUltrasonicSensors90Degrees = true;
     }
 
     public NEATKheperaIIIPhenotype(NEATNetwork network) {
@@ -36,7 +36,7 @@ public class NEATKheperaIIIPhenotype extends KheperaIIIPhenotype {
 
     @Override
     public Double2D step(List<List<Double>> sensorReadings) {
-        for (int i = 0; i < input.size(); i++) {
+        for (int i = 0, n = input.size(); i < n; i++) {
             input.setData(i, sensorReadings.get(i).get(0));
         }
 
