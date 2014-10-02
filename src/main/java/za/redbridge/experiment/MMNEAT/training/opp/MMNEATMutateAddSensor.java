@@ -79,6 +79,10 @@ public class MMNEATMutateAddSensor extends NEATMutation {
 
     }
 
+    /**
+     * Add sensors with a preference for simple proximity sensors. Don't add bottom proximity as a
+     * single sensor is enough to detect the target area.
+     */
     private static SensorType pickRandomSensorType(Random rnd) {
         double random = rnd.nextDouble();
         if (random < 0.3) {
