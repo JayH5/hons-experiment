@@ -3,8 +3,7 @@ package za.redbridge.experiment.sensor;
 import java.awt.Color;
 import java.awt.Paint;
 
-import za.redbridge.simulator.object.PhysicalObject;
-import za.redbridge.simulator.object.TargetAreaObject;
+import za.redbridge.simulator.physics.FilterConstants;
 import za.redbridge.simulator.sensor.ProximityAgentSensor;
 
 /**
@@ -31,7 +30,12 @@ public class TargetAreaSensor extends ProximityAgentSensor {
     }
 
     @Override
-    public boolean isRelevantObject(PhysicalObject object) {
-        return object instanceof TargetAreaObject;
+    protected int getFilterCategoryBits() {
+        return FilterConstants.CategoryBits.TARGET_AREA_SENSOR;
+    }
+
+    @Override
+    protected int getFilterMaskBits() {
+        return FilterConstants.CategoryBits.TARGET_AREA;
     }
 }

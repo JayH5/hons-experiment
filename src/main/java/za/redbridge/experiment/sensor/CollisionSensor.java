@@ -3,10 +3,6 @@ package za.redbridge.experiment.sensor;
 import java.awt.Color;
 import java.awt.Paint;
 
-import za.redbridge.simulator.object.PhysicalObject;
-import za.redbridge.simulator.object.ResourceObject;
-import za.redbridge.simulator.object.RobotObject;
-import za.redbridge.simulator.object.WallObject;
 import za.redbridge.simulator.sensor.ProximityAgentSensor;
 
 /**
@@ -33,10 +29,4 @@ public class CollisionSensor extends ProximityAgentSensor {
         return DEFAULT_PAINT;
     }
 
-    @Override
-    public boolean isRelevantObject(PhysicalObject object) {
-        return object instanceof ResourceObject
-                || object instanceof RobotObject
-                || object instanceof WallObject;
-    }
 }
