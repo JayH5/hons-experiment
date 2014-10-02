@@ -1,5 +1,7 @@
 package za.redbridge.experiment.sensor;
 
+import za.redbridge.simulator.khepera.ProximitySensor;
+import za.redbridge.simulator.khepera.UltrasonicSensor;
 import za.redbridge.simulator.sensor.AgentSensor;
 
 /**
@@ -7,18 +9,15 @@ import za.redbridge.simulator.sensor.AgentSensor;
  */
 public enum SensorType {
 
-    COLLISION,
-    RESOURCE;
-    //TARGET_AREA;
+    PROXIMITY,
+    ULTRASONIC;
 
     public AgentSensor getSensor(float bearing, float orientation) {
         switch (this) {
-            case COLLISION:
-                return new CollisionSensor(bearing, orientation);
-            case RESOURCE:
-                return new ResourceSensor(bearing, orientation);
-            /*case TARGET_AREA:
-                return new TargetAreaSensor(bearing, orientation);*/
+            case PROXIMITY:
+                return new ProximitySensor(bearing, orientation);
+            case ULTRASONIC:
+                return new UltrasonicSensor(bearing, orientation);
         }
         return null;
     }
