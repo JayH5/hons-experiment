@@ -72,7 +72,7 @@ public class Main {
         final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
         for (int i = 0; i < options.numIterations; i++) {
             train.iteration();
-            statsRecorder.recordTrainingIteration();
+            statsRecorder.recordIterationEnd();
         }
 
         log.debug("Training complete");

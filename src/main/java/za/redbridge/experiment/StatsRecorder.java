@@ -18,6 +18,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +45,8 @@ public class StatsRecorder {
     private Path directory;
     private Path statsFile;
 
+    private Instant iterationStartTime;
+
     public StatsRecorder(EvolutionaryAlgorithm trainer, ScoreCalculator calculator) {
         this.trainer = trainer;
         this.statistics = calculator.getStatistics();
@@ -65,13 +69,19 @@ public class StatsRecorder {
     private void initStatsFile() {
         statsFile = directory.resolve("stats.csv");
         try (BufferedWriter writer = Files.newBufferedWriter(statsFile)) {
-            writer.write("epoch, max, min, mean, standev\n");
+            writer.write("epoch, max, min, mean, standev, duration\n");
         } catch (IOException e) {
             log.error("Unable to initialize stats file", e);
         }
     }
 
-    public void recordTrainingIteration() {
+    public void recordIterationStart() {
+        iterationStartTime = Instant.now();
+    }
+
+    public void recordIterationEnd() {
+        Duration iterationDuration = Duration.between(iterationStartTime, Instant.now());
+
         int epoch = trainer.getIteration();
         double max = statistics.getMax();
         double min = statistics.getMin();
@@ -81,7 +91,7 @@ public class StatsRecorder {
         // Log and save stats
         log.info("Epoch " + epoch + " complete");
         log.info("Best score: " + max + ", average score: " + mean);
-        saveStatsAsync(epoch, max, min, mean, sd);
+        saveStatsAsync(epoch, max, min, mean, sd, iterationDuration);
 
         // Check if new best network and save it if so
         Genome newBestGenome = trainer.getBestGenome();
@@ -99,12 +109,14 @@ public class StatsRecorder {
     }
 
     private void saveStatsAsync(final int epoch, final double max, final double min,
-            final double mean, final double sd) {
-        executor.submit(() -> saveStats(epoch, max, min, mean, sd));
+            final double mean, final double sd, final Duration duration) {
+        executor.submit(() -> saveStats(epoch, max, min, mean, sd, duration));
     }
 
-    private void saveStats(int epoch, double max, double min, double mean, double sd) {
-        String line = String.format("%d, %f, %f, %f, %f\n", epoch, max, min, mean, sd);
+    private void saveStats(int epoch, double max, double min, double mean, double sd,
+            Duration duration) {
+        String line =
+                String.format("%d, %f, %f, %f, %f, %s\n", epoch, max, min, mean, sd, duration);
 
         final OpenOption[] options = {
                 StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE
