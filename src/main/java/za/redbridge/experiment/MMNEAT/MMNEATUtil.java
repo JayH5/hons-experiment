@@ -91,7 +91,9 @@ public final class MMNEATUtil {
         // Add the sensor position mutator
         result.addOperation(0.09, new MMNEATMutatePositions(
                 new SelectSensorsFixed(1), new MutatePerturbSensorPosition(1, 1)));
-        result.addOperation(0.01, new MMNEATMutateAddSensor());
+
+        // Add sensor mutation - use the smallest link perturb operation
+        result.addOperation(0.01, new MMNEATMutateAddSensor(new MutatePerturbLinkWeight(0.02)));
 
 
         result.getOperators().finalizeStructure();

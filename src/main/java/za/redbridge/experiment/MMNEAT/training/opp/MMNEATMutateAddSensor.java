@@ -5,8 +5,10 @@ import org.encog.mathutil.randomize.RangeRandomizer;
 import org.encog.ml.ea.genome.Genome;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.training.NEATInnovation;
+import org.encog.neural.neat.training.NEATLinkGene;
 import org.encog.neural.neat.training.NEATNeuronGene;
 import org.encog.neural.neat.training.opp.NEATMutation;
+import org.encog.neural.neat.training.opp.links.MutateLinkWeight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +23,22 @@ import za.redbridge.experiment.sensor.SensorType;
  * Mutation to add a single new input node to the network. This mutation adds a new sensor in a
  * random position and with a random type. The sensor is connected to other (non-input) nodes in
  * the network randomly but with the same connection density as the original network was created
- * with. The weights of the connections are set to 0 (and so the new sensor will not have any effect
- * until one of the weights is mutated).
+ * with. The weights of the connections are set to 0 and then mutated using the provided weight
+ * mutation operator.
  *
  * Created by jamie on 2014/09/16.
  */
 public class MMNEATMutateAddSensor extends NEATMutation {
+
+    private final MutateLinkWeight weightMutator;
+
+    /**
+     * @param weightMutator the mutator that will initialize the links of the new sensor
+     */
+    public MMNEATMutateAddSensor(MutateLinkWeight weightMutator) {
+        this.weightMutator = weightMutator;
+    }
+
     @Override
     public void performOperation(Random rnd, Genome[] parents, int parentIndex, Genome[] offspring,
             int offspringIndex) {
@@ -60,11 +72,17 @@ public class MMNEATMutateAddSensor extends NEATMutation {
         // connection density as when network was initialized
         boolean haveLinkToInput = false;
         long fromID = inputNeuron.getId();
+        List<NEATLinkGene> linkGenes = target.getLinksChromosome();
         for (NEATNeuronGene neuron : neurons) {
             // Connect with same connection density as the network was initialized with
             if (rnd.nextDouble() < pop.getInitialConnectionDensity()) {
                 long toID = neuron.getId();
                 createLink(target, fromID, toID, 0.0);
+
+                // Get last added link and mutate weights
+                NEATLinkGene link = linkGenes.get(linkGenes.size() - 1);
+                weightMutator.mutateWeight(rnd, link, pop.getWeightRange());
+
                 haveLinkToInput = true;
             }
         }
@@ -75,6 +93,8 @@ public class MMNEATMutateAddSensor extends NEATMutation {
             int index = (int) (rnd.nextDouble() * neurons.size());
             long toID = neurons.get(index).getId();
             createLink(target, fromID, toID, 0.0);
+            NEATLinkGene link = linkGenes.get(linkGenes.size() - 1);
+            weightMutator.mutateWeight(rnd, link, pop.getWeightRange());
         }
 
     }
