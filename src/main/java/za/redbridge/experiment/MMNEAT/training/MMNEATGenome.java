@@ -157,8 +157,7 @@ public class MMNEATGenome extends NEATGenome {
         List<NEATLinkGene> links = getLinksChromosome();
         for (int i = 0; i < inputCount + 1; i++) {
             for (int j = 0; j < outputCount; j++) {
-                // make sure we have at least one connection
-                if (links.size() < 1 || rnd.nextDouble() < connectionDensity) {
+                if (rnd.nextDouble() < connectionDensity) {
                     long fromID = neurons.get(i).getId();
                     long toID = neurons.get(inputCount + j + 1).getId();
                     double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(),
@@ -167,6 +166,18 @@ public class MMNEATGenome extends NEATGenome {
                     links.add(gene);
                 }
             }
+        }
+
+        // make sure we have at least one connection
+        if (links.isEmpty()) {
+            // Choose a random input/output pair
+            int inputIndex = (int) (rnd.nextDouble() * (inputCount + 1));
+            int outputIndex = (int) (rnd.nextDouble() * outputCount);
+            long fromID = neurons.get(inputIndex).getId();
+            long toID = neurons.get(inputCount + outputIndex + 1).getId();
+            double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(), pop.getWeightRange());
+            NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID, w);
+            links.add(gene);
         }
     }
 
