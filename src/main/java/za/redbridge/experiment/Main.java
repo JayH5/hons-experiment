@@ -43,7 +43,10 @@ public class Main {
             simConfig = new SimConfig();
         }
 
-        ScoreCalculator calculateScore = new ScoreCalculator(simConfig, options.simulationRuns);
+        boolean evolvingMorphology = !options.control;
+
+        ScoreCalculator calculateScore =
+                new ScoreCalculator(simConfig, options.simulationRuns, evolvingMorphology);
 
         if (options.genomePath != null && !options.genomePath.isEmpty()) {
             NEATNetwork network = loadNetwork(options.genomePath);
@@ -69,11 +72,11 @@ public class Main {
             train = NEATUtil.constructNEATTrainer(population, calculateScore);
         }
 
-        final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
+        final StatsRecorder statsRecorder =
+                new StatsRecorder(train, calculateScore, evolvingMorphology);
         for (int i = 0; i < options.numIterations; i++) {
-            statsRecorder.recordIterationStart();
             train.iteration();
-            statsRecorder.recordIterationEnd();
+            statsRecorder.recordIterationStats();
         }
 
         log.debug("Training complete");

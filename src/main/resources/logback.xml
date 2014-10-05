@@ -10,22 +10,11 @@
     <timestamp key="byMinute" datePattern="yyyyMMdd'T'HHmm"/>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/log-${byMinute}.log</file>
+        <file>results/${byMinute}/logback.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <appender name="FILE-stats" class="ch.qos.logback.core.FileAppender">
-        <file>logs/stats-${byMinute}.log</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="za.redbridge.experiment.StatsRecorder" level="info">
-        <appender-ref ref="FILE-stats" />
-    </logger>
 
     <logger name="za.redbridge.experiment" level="debug">
         <appender-ref ref="FILE" />

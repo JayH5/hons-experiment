@@ -4,6 +4,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.encog.ml.ea.genome.Genome;
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 import org.encog.neural.neat.NEATNetwork;
+import org.encog.neural.neat.training.NEATGenome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +19,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,93 +34,131 @@ public class StatsRecorder {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmm");
 
+    private static final String PERFORMANCE_STATS_FILENAME = "performance.csv";
+    private static final String SCORE_STATS_FILENAME = "scores.csv";
+    private static final String SENSOR_STATS_FILENAME = "sensors.csv";
+
     private final EvolutionaryAlgorithm trainer;
-    private final DescriptiveStatistics statistics;
+    private final ScoreCalculator calculator;
+    private final boolean evolvingMorphology;
 
     private final ExecutorService executor;
 
     private Genome currentBestGenome;
 
     private Path directory;
-    private Path statsFile;
+    private Path networksDir;
 
-    private Instant iterationStartTime;
+    private Path performanceStatsFile;
+    private Path scoreStatsFile;
+    private Path sensorStatsFile;
 
-    public StatsRecorder(EvolutionaryAlgorithm trainer, ScoreCalculator calculator) {
+    public StatsRecorder(EvolutionaryAlgorithm trainer, ScoreCalculator calculator,
+            boolean evolvingMorphology) {
         this.trainer = trainer;
-        this.statistics = calculator.getStatistics();
+        this.calculator = calculator;
+        this.evolvingMorphology = evolvingMorphology;
 
         executor = Executors.newSingleThreadExecutor();
 
         initDirectories();
-        initStatsFile();
+        initStatsFiles();
     }
 
     private void initDirectories() {
-        directory = Paths.get("networks", DATE_FORMAT.format(new Date()));
+        String dateString = DATE_FORMAT.format(new Date());
+
+        directory = Paths.get("results", dateString);
+        networksDir = directory.resolve("networks");
+        initDirectory(networksDir);
+    }
+
+    private static void initDirectory(Path path) {
         try {
-            Files.createDirectories(directory);
+            Files.createDirectories(path);
         } catch (IOException e) {
             log.error("Unable to create directories", e);
         }
     }
 
-    private void initStatsFile() {
-        statsFile = directory.resolve("stats.csv");
-        try (BufferedWriter writer = Files.newBufferedWriter(statsFile)) {
-            writer.write("epoch, max, min, mean, standev, duration\n");
+    private void initStatsFiles() {
+        performanceStatsFile = directory.resolve(PERFORMANCE_STATS_FILENAME);
+        initStatsFile(performanceStatsFile);
+
+        scoreStatsFile = directory.resolve(SCORE_STATS_FILENAME);
+        initStatsFile(scoreStatsFile);
+
+        if (evolvingMorphology) {
+            sensorStatsFile = directory.resolve(SENSOR_STATS_FILENAME);
+            initStatsFile(sensorStatsFile);
+        }
+    }
+
+    private static void initStatsFile(Path path) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write("epoch, max, min, mean, standev\n");
         } catch (IOException e) {
             log.error("Unable to initialize stats file", e);
         }
     }
 
-    public void recordIterationStart() {
-        iterationStartTime = Instant.now();
-    }
-
-    public void recordIterationEnd() {
-        Duration iterationDuration = Duration.between(iterationStartTime, Instant.now());
-
+    public void recordIterationStats() {
         int epoch = trainer.getIteration();
-        double max = statistics.getMax();
-        double min = statistics.getMin();
-        double mean = statistics.getMean();
-        double sd = statistics.getStandardDeviation();
-
-        // Log and save stats
         log.info("Epoch " + epoch + " complete");
-        log.info("Best score: " + max + ", average score: " + mean);
-        saveStatsAsync(epoch, max, min, mean, sd, iterationDuration);
+
+        recordStats(calculator.getPerformanceStatistics(), epoch, performanceStatsFile);
+
+        recordStats(calculator.getScoreStatistics(), epoch, scoreStatsFile);
+
+        if (evolvingMorphology) {
+            recordStats(calculator.getSensorStatistics(), epoch, sensorStatsFile);
+        }
 
         // Check if new best network and save it if so
-        Genome newBestGenome = trainer.getBestGenome();
+        NEATGenome newBestGenome = (NEATGenome) trainer.getBestGenome();
         if (newBestGenome != currentBestGenome) {
-            log.info("New best genome! Epoch: " + epoch + ", score: " + newBestGenome.getScore());
+            if (evolvingMorphology) {
+                log.info("New best genome! Epoch: " + epoch + ", score: "
+                        + newBestGenome.getScore() + ", num sensors: "
+                        + newBestGenome.getInputCount());
+            } else {
+                log.info("New best genome! Epoch: " + epoch + ", score: "
+                        + newBestGenome.getScore());
+            }
 
             saveNetworkAsync(decodeGenome(newBestGenome), "epoch" + epoch);
             currentBestGenome = newBestGenome;
         }
-        statistics.clear();
+    }
+
+    private void recordStats(DescriptiveStatistics stats, int epoch, Path filepath) {
+        double max = stats.getMax();
+        double min = stats.getMin();
+        double mean = stats.getMean();
+        double sd = stats.getStandardDeviation();
+        stats.clear();
+
+        log.debug("Recording stats - max: " + max + ", mean: " + mean);
+        saveStatsAsync(filepath, epoch, max, min, mean, sd);
     }
 
     private NEATNetwork decodeGenome(Genome genome) {
         return (NEATNetwork) trainer.getCODEC().decode(genome);
     }
 
-    private void saveStatsAsync(final int epoch, final double max, final double min,
-            final double mean, final double sd, final Duration duration) {
-        executor.submit(() -> saveStats(epoch, max, min, mean, sd, duration));
+    private void saveStatsAsync(final Path path, final int epoch, final double max, final double min,
+            final double mean, final double sd) {
+        executor.submit(() -> saveStats(path, epoch, max, min, mean, sd));
     }
 
-    private void saveStats(int epoch, double max, double min, double mean, double sd,
-            Duration duration) {
-        String line =
-                String.format("%d, %f, %f, %f, %f, %s\n", epoch, max, min, mean, sd, duration);
+    private static void saveStats(Path path, int epoch, double max, double min, double mean,
+            double sd) {
+        String line = String.format("%d, %f, %f, %f, %f\n", epoch, max, min, mean, sd);
 
         final OpenOption[] options = {
                 StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE
         };
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(statsFile, options))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path, options))) {
             writer.append(line);
         } catch (IOException e) {
             log.error("Failed to append to log file", e);
@@ -133,7 +170,7 @@ public class StatsRecorder {
     }
 
     private void saveNetwork(NEATNetwork network, String name) {
-        Path path = directory.resolve(name + ".ser");
+        Path path = networksDir.resolve(name + ".ser");
         try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
             out.writeObject(network);
         } catch (IOException e) {
