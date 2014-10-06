@@ -13,6 +13,7 @@ import java.time.Instant;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
+import za.redbridge.experiment.MMNEAT.SensorMorphology;
 import za.redbridge.simulator.Simulation;
 import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
@@ -31,18 +32,20 @@ public class ScoreCalculator implements CalculateScore {
 
     private final SimConfig simConfig;
     private final int simulationRuns;
-    private final boolean evolvingMorphology;
+    private final SensorMorphology sensorMorphology;
 
     private final DescriptiveStatistics performanceStats = new SynchronizedDescriptiveStatistics();
     private final DescriptiveStatistics scoreStats = new SynchronizedDescriptiveStatistics();
     private final DescriptiveStatistics sensorStats;
 
-    public ScoreCalculator(SimConfig simConfig, int simulationRuns, boolean evolvingMorphology) {
+    public ScoreCalculator(SimConfig simConfig, int simulationRuns,
+            SensorMorphology sensorMorphology) {
         this.simConfig = simConfig;
         this.simulationRuns = simulationRuns;
-        this.evolvingMorphology = evolvingMorphology;
+        this.sensorMorphology = sensorMorphology;
 
-        this.sensorStats = evolvingMorphology ? new SynchronizedDescriptiveStatistics() : null;
+        // If fixed morphology then don't record sensor stats
+        this.sensorStats = isEvolvingMorphology() ? new SynchronizedDescriptiveStatistics() : null;
     }
 
     @Override
@@ -67,8 +70,7 @@ public class ScoreCalculator implements CalculateScore {
         double score = fitness / simulationRuns;
         scoreStats.addValue(score);
 
-        // If evolving morphology, record the number of inputs
-        if (evolvingMorphology) {
+        if (isEvolvingMorphology()) {
             sensorStats.addValue(network.getInputCount());
         }
 
@@ -98,11 +100,15 @@ public class ScoreCalculator implements CalculateScore {
     }
 
     private Phenotype getPhenotypeForNetwork(NEATNetwork network) {
-        if (evolvingMorphology) {
+        if (isEvolvingMorphology()) {
             return new MMNEATPhenotype((MMNEATNetwork) network);
         } else {
-            return new NEATKheperaIIIPhenotype(network);
+            return new NEATPhenotype(network, sensorMorphology);
         }
+    }
+
+    public boolean isEvolvingMorphology() {
+        return sensorMorphology == null;
     }
 
     public DescriptiveStatistics getPerformanceStatistics() {

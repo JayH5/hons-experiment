@@ -17,8 +17,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
+import za.redbridge.experiment.MMNEAT.SensorMorphology;
 import za.redbridge.simulator.config.SimConfig;
 
 /**
@@ -43,10 +45,18 @@ public class Main {
             simConfig = new SimConfig();
         }
 
-        boolean evolvingMorphology = !options.control;
+        SensorMorphology morphology = null;
+        if (options.control) {
+            if (options.morphologyPath != null && !options.morphologyPath.isEmpty()) {
+                MMNEATNetwork network = (MMNEATNetwork) loadNetwork(options.morphologyPath);
+                morphology = network.getSensorMorphology();
+            } else {
+                morphology = new KheperaIIIMorphology();
+            }
+        }
 
         ScoreCalculator calculateScore =
-                new ScoreCalculator(simConfig, options.simulationRuns, evolvingMorphology);
+                new ScoreCalculator(simConfig, options.simulationRuns, morphology);
 
         if (options.genomePath != null && !options.genomePath.isEmpty()) {
             NEATNetwork network = loadNetwork(options.genomePath);
@@ -58,8 +68,7 @@ public class Main {
         if (!options.control) {
             population = new MMNEATPopulation(2, options.populationSize);
         } else {
-            population = new NEATPopulation(NEATKheperaIIIPhenotype.getNumberOfSensors(), 2,
-                    options.populationSize);
+            population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
         }
         population.reset();
 
@@ -72,8 +81,7 @@ public class Main {
             train = NEATUtil.constructNEATTrainer(population, calculateScore);
         }
 
-        final StatsRecorder statsRecorder =
-                new StatsRecorder(train, calculateScore, evolvingMorphology);
+        final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
         for (int i = 0; i < options.numIterations; i++) {
             train.iteration();
             statsRecorder.recordIterationStats();
@@ -114,6 +122,11 @@ public class Main {
         @Parameter(names = "--control", description = "Run with the control case")
         private boolean control = false;
 
+        @Parameter(names = "--morphology", description = "For use with the control case, provide"
+                + " the path to a serialized MMNEATNetwork to have its morphology used for the"
+                + " control case")
+        private String morphologyPath = null;
+
         @Override
         public String toString() {
             return "Options: \n"
@@ -122,7 +135,8 @@ public class Main {
                     + "\tPopulation size: " + populationSize + "\n"
                     + "\tNumber of simulation tests per iteration: " + simulationRuns + "\n"
                     + "\tDemo network config path: " + genomePath + "\n"
-                    + "\tRunning with the control case: " + control;
+                    + "\tRunning with the control case: " + control
+                    + "\tMorphology path: " + morphologyPath;
         }
     }
 }

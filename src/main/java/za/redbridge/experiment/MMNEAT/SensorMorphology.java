@@ -35,17 +35,17 @@ public class SensorMorphology implements Serializable {
         return numSensors;
     }
 
-    void setSensorBearing(int index, double bearing) {
+    protected void setSensorBearing(int index, double bearing) {
         checkValidIndex(index);
         bearings[index] = bearing;
     }
 
-    void setSensorOrientation(int index, double orientation) {
+    protected void setSensorOrientation(int index, double orientation) {
         checkValidIndex(index);
         orientations[index] = orientation;
     }
 
-    void setSensorType(int index, SensorType type) {
+    protected void setSensorType(int index, SensorType type) {
         checkValidIndex(index);
         types[index] = type;
     }

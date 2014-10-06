@@ -53,11 +53,10 @@ public class StatsRecorder {
     private Path scoreStatsFile;
     private Path sensorStatsFile;
 
-    public StatsRecorder(EvolutionaryAlgorithm trainer, ScoreCalculator calculator,
-            boolean evolvingMorphology) {
+    public StatsRecorder(EvolutionaryAlgorithm trainer, ScoreCalculator calculator) {
         this.trainer = trainer;
         this.calculator = calculator;
-        this.evolvingMorphology = evolvingMorphology;
+        this.evolvingMorphology = calculator.isEvolvingMorphology();
 
         executor = Executors.newSingleThreadExecutor();
 
