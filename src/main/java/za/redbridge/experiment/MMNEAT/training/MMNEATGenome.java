@@ -155,6 +155,7 @@ public class MMNEATGenome extends NEATGenome {
 
         // and now links
         List<NEATLinkGene> links = getLinksChromosome();
+        boolean haveInputOutputLink = false;
         for (int i = 0; i < inputCount + 1; i++) {
             for (int j = 0; j < outputCount; j++) {
                 if (rnd.nextDouble() < connectionDensity) {
@@ -164,17 +165,21 @@ public class MMNEATGenome extends NEATGenome {
                             pop.getWeightRange());
                     NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID++, w);
                     links.add(gene);
+
+                    if (i != 0) { // if not bias node
+                        haveInputOutputLink = true;
+                    }
                 }
             }
         }
 
-        // make sure we have at least one connection
-        if (links.isEmpty()) {
-            // Choose a random input/output pair
-            int inputIndex = (int) (rnd.nextDouble() * (inputCount + 1));
-            int outputIndex = (int) (rnd.nextDouble() * outputCount);
+        // make sure we have at least one connection between inputs and outputs
+        if (!haveInputOutputLink) {
+            // choose a random input/output pair
+            int inputIndex = (int) (rnd.nextDouble() * inputCount) + 1;
+            int outputIndex = (int) (rnd.nextDouble() * outputCount) + inputCount + 1;
             long fromID = neurons.get(inputIndex).getId();
-            long toID = neurons.get(inputCount + outputIndex + 1).getId();
+            long toID = neurons.get(outputIndex).getId();
             double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(), pop.getWeightRange());
             NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID, w);
             links.add(gene);
