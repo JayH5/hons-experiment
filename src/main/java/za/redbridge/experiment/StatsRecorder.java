@@ -125,7 +125,7 @@ public class StatsRecorder {
                         + newBestGenome.getScore());
             }
 
-            saveNetworkAsync(decodeGenome(newBestGenome), "epoch" + epoch);
+            saveGenomeAsync(newBestGenome, "epoch" + epoch);
             currentBestGenome = newBestGenome;
         }
     }
@@ -164,12 +164,14 @@ public class StatsRecorder {
         }
     }
 
-    private void saveNetworkAsync(final NEATNetwork network, final String name) {
-        executor.submit(() -> saveNetwork(network, name));
+    private void saveGenomeAsync(final NEATGenome genome, final String name) {
+        executor.submit(() -> {
+            GraphvizEngine.saveGenome(genome, networksDir.resolve(name + ".dot"));
+            saveNetwork(decodeGenome(genome), networksDir.resolve(name + ".ser"));
+        });
     }
 
-    private void saveNetwork(NEATNetwork network, String name) {
-        Path path = networksDir.resolve(name + ".ser");
+    private static void saveNetwork(NEATNetwork network, Path path) {
         try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
             out.writeObject(network);
         } catch (IOException e) {
