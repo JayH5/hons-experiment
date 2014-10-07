@@ -1,5 +1,7 @@
 package za.redbridge.experiment;
 
+import org.encog.neural.neat.NEATLink;
+import org.encog.neural.neat.NEATNetwork;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.training.NEATGenome;
 import org.encog.neural.neat.training.NEATLinkGene;
@@ -29,7 +31,8 @@ public class GraphvizEngine {
             writer.write("digraph G {");
             writer.newLine();
 
-            writeNodes(writer, genome);
+            writeNeuronGenes(writer, genome.getNeuronsChromosome());
+            writeLinkGenes(writer, genome.getLinksChromosome());
 
             writer.write("}");
             writer.newLine();
@@ -39,8 +42,8 @@ public class GraphvizEngine {
         }
     }
 
-    private static void writeNodes(BufferedWriter writer, NEATGenome genome) throws IOException {
-        List<NEATNeuronGene> neurons = genome.getNeuronsChromosome();
+    private static void writeNeuronGenes(BufferedWriter writer, List<NEATNeuronGene> neurons)
+            throws IOException {
         for (NEATNeuronGene neuron : neurons) {
             writer.write("  ");
             writer.write(String.valueOf(neuron.getId()));
@@ -54,8 +57,10 @@ public class GraphvizEngine {
             }
             writer.newLine();
         }
+    }
 
-        List<NEATLinkGene> links = genome.getLinksChromosome();
+    private static void writeLinkGenes(BufferedWriter writer, List<NEATLinkGene> links)
+            throws IOException {
         for (NEATLinkGene link : links) {
             writer.write("  ");
             writer.write(link.getFromNeuronID() + " -> " + link.getToNeuronID());
@@ -64,6 +69,31 @@ public class GraphvizEngine {
             } else {
                 writer.write(" [ style=\"dashed\" ];");
             }
+            writer.newLine();
+        }
+    }
+
+    public static void saveNetwork(NEATNetwork network, Path path) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write("digraph G {");
+            writer.newLine();
+
+            writeLinks(writer, network.getLinks());
+
+            writer.write("}");
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            log.error("Failed to save graphviz representation of network", e);
+        }
+    }
+
+    private static void writeLinks(BufferedWriter writer, NEATLink[] links)
+            throws IOException {
+        for (NEATLink link : links) {
+            writer.write("  ");
+            writer.write(link.getFromNeuron() + " -> " + link.getToNeuron());
+            writer.write(" [ label=\"" + String.format("%.3f", link.getWeight()) + "\" ];");
             writer.newLine();
         }
     }
