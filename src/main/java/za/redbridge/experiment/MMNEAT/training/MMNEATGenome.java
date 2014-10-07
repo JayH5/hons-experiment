@@ -155,35 +155,35 @@ public class MMNEATGenome extends NEATGenome {
 
         // and now links
         List<NEATLinkGene> links = getLinksChromosome();
-        boolean haveInputOutputLink = false;
         for (int i = 0; i < inputCount + 1; i++) {
+            boolean haveInputOutputLink = false;
+
+            long fromID = neurons.get(i).getId();
             for (int j = 0; j < outputCount; j++) {
                 if (rnd.nextDouble() < connectionDensity) {
-                    long fromID = neurons.get(i).getId();
                     long toID = neurons.get(inputCount + j + 1).getId();
                     double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(),
                             pop.getWeightRange());
                     NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID++, w);
                     links.add(gene);
 
-                    if (i != 0) { // if not bias node
-                        haveInputOutputLink = true;
-                    }
+                    haveInputOutputLink = true;
                 }
+            }
+
+            // make sure we have at least one connection between each input to an output
+            // since we start with a "minimal" set of sensors each must be used
+            if (i != 0 && !haveInputOutputLink) {
+                // choose a random input/output pair
+                int outputIndex = (int) (rnd.nextDouble() * outputCount) + inputCount + 1;
+                long toID = neurons.get(outputIndex).getId();
+                double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(),
+                        pop.getWeightRange());
+                NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID, w);
+                links.add(gene);
             }
         }
 
-        // make sure we have at least one connection between inputs and outputs
-        if (!haveInputOutputLink) {
-            // choose a random input/output pair
-            int inputIndex = (int) (rnd.nextDouble() * inputCount) + 1;
-            int outputIndex = (int) (rnd.nextDouble() * outputCount) + inputCount + 1;
-            long fromID = neurons.get(inputIndex).getId();
-            long toID = neurons.get(outputIndex).getId();
-            double w = RangeRandomizer.randomize(rnd, -pop.getWeightRange(), pop.getWeightRange());
-            NEATLinkGene gene = new NEATLinkGene(fromID, toID, true, innovationID, w);
-            links.add(gene);
-        }
     }
 
     public MMNEATGenome() {
