@@ -22,20 +22,22 @@ import za.redbridge.experiment.sensor.SensorType;
 /**
  * Mutation to add a single new input node to the network. This mutation adds a new sensor in a
  * random position and with a random type. The sensor is connected to other (non-input) nodes in
- * the network randomly but with the same connection density as the original network was created
- * with. The weights of the connections are set to 0 and then mutated using the provided weight
- * mutation operator.
+ * the network randomly but with a certain connection density. The weights of the connections are
+ * set to 0 and then mutated using the provided weight mutation operator.
  *
  * Created by jamie on 2014/09/16.
  */
 public class MMNEATMutateAddSensor extends NEATMutation {
 
+    private final double connectionDensity;
     private final MutateLinkWeight weightMutator;
 
     /**
+     * @param connectionDensity the connection density to use when adding links to the new sensor
      * @param weightMutator the mutator that will initialize the links of the new sensor
      */
-    public MMNEATMutateAddSensor(MutateLinkWeight weightMutator) {
+    public MMNEATMutateAddSensor(double connectionDensity, MutateLinkWeight weightMutator) {
+        this.connectionDensity = connectionDensity;
         this.weightMutator = weightMutator;
     }
 
@@ -68,14 +70,13 @@ public class MMNEATMutateAddSensor extends NEATMutation {
         neurons.removeAll(target.getInputNeuronsChromosome());
         neurons.remove(target.getBiasGene());
 
-        // Iterate through list of those neurons, pick neurons to link to randomly but with same
-        // connection density as when network was initialized
+        // Iterate through list of those neurons, pick neurons to link to randomly
         boolean haveLinkToInput = false;
         long fromID = inputNeuron.getId();
         List<NEATLinkGene> linkGenes = target.getLinksChromosome();
         for (NEATNeuronGene neuron : neurons) {
             // Connect with same connection density as the network was initialized with
-            if (rnd.nextDouble() < pop.getInitialConnectionDensity()) {
+            if (rnd.nextDouble() < connectionDensity) {
                 long toID = neuron.getId();
                 createLink(target, fromID, toID, 0.0);
 
