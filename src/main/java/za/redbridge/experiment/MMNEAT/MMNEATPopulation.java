@@ -20,6 +20,8 @@ public class MMNEATPopulation extends NEATPopulation {
 
     private final double sensorOrientationRange = Math.PI / 2;
 
+    private final double weightRange = 1.0;
+
     /**
      * An empty constructor for serialization.
      */
@@ -69,6 +71,11 @@ public class MMNEATPopulation extends NEATPopulation {
 
         // create initial innovations
         setInnovations(new NEATInnovationList(this));
+    }
+
+    @Override
+    public double getWeightRange() {
+        return weightRange;
     }
 
     public double getSensorOrientationRange() {
