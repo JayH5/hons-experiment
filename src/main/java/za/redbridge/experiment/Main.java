@@ -70,6 +70,7 @@ public class Main {
         } else {
             population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
         }
+        population.setInitialConnectionDensity(1.0);
         population.reset();
 
         log.debug("Population initialized");
