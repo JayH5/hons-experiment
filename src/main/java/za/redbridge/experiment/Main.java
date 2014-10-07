@@ -135,7 +135,7 @@ public class Main {
                     + "\tPopulation size: " + populationSize + "\n"
                     + "\tNumber of simulation tests per iteration: " + simulationRuns + "\n"
                     + "\tDemo network config path: " + genomePath + "\n"
-                    + "\tRunning with the control case: " + control
+                    + "\tRunning with the control case: " + control + "\n"
                     + "\tMorphology path: " + morphologyPath;
         }
     }
