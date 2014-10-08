@@ -13,7 +13,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 
@@ -51,6 +53,7 @@ public class GraphvizEngine {
                     && neuron instanceof MMNEATNeuronGene) {
                 MMNEATNeuronGene mmneatNeuronGene = (MMNEATNeuronGene) neuron;
                 writer.write(" [ label=\"" + neuron.getNeuronType()
+                        + " (" + neuron.getId() + ")"
                         + "\\n" + mmneatNeuronGene.getInputSensorType() + "\" ];");
             } else {
                 writer.write(" [ label=\"" + neuron.getNeuronType() + "\" ];");
@@ -78,6 +81,7 @@ public class GraphvizEngine {
             writer.write("digraph G {");
             writer.newLine();
 
+            writeNodes(writer, network);
             writeLinks(writer, network.getLinks());
 
             writer.write("}");
@@ -86,6 +90,50 @@ public class GraphvizEngine {
         } catch (IOException e) {
             log.error("Failed to save graphviz representation of network", e);
         }
+    }
+
+    private static void writeNodes(BufferedWriter writer, NEATNetwork network)
+        throws IOException {
+        // Reconstruct node information from links (only works for constant inputs/outputs)
+        Map<Integer, String> nodes = new HashMap<>();
+        NEATLink[] links = network.getLinks();
+        int inputCount = network.getInputCount();
+        int outputCount = network.getOutputCount();
+        for (NEATLink link : links) {
+            int fromNeuron = link.getFromNeuron();
+            if (!nodes.containsKey(fromNeuron)) {
+                nodes.put(fromNeuron, labelForNode(fromNeuron, inputCount, outputCount));
+            }
+
+            int toNeuron = link.getToNeuron();
+            if (!nodes.containsKey(toNeuron)) {
+                nodes.put(toNeuron, labelForNode(toNeuron, inputCount, outputCount));
+            }
+        }
+
+        // Write to file
+        for (Map.Entry<Integer, String> entry : nodes.entrySet()) {
+            writer.write("  ");
+            writer.write(entry.getKey().toString());
+            writer.write(" [ label=\"" + entry.getValue() + " (" + entry.getKey() + ")\" ]");
+            writer.newLine();
+        }
+    }
+
+    private static String labelForNode(int node, int inputCount, int outputCount) {
+        if (node == 0) {
+            return NEATNeuronType.Bias.toString();
+        }
+
+        if (node < inputCount + 1) {
+            return NEATNeuronType.Input.toString();
+        }
+
+        if (node < inputCount + outputCount + 1) {
+            return NEATNeuronType.Output.toString();
+        }
+
+        return NEATNeuronType.Hidden.toString();
     }
 
     private static void writeLinks(BufferedWriter writer, NEATLink[] links)
