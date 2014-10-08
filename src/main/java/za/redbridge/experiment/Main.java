@@ -70,6 +70,7 @@ public class Main {
         } else {
             population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
         }
+        population.setInitialConnectionDensity(options.connectionDensity);
         population.reset();
 
         log.debug("Population initialized");
@@ -116,6 +117,10 @@ public class Main {
         @Parameter(names = "--sim-runs", description = "Number of simulation runs per iteration")
         private int simulationRuns = 4;
 
+        @Parameter(names = "--conn-density", description = "Adjust the initial connection density"
+                + " for the population")
+        private double connectionDensity = 0.5;
+
         @Parameter(names = "--demo", description = "Show a GUI demo of a given genome")
         private String genomePath = null;
 
@@ -134,6 +139,7 @@ public class Main {
                     + "\tNumber of simulation steps: " + numIterations + "\n"
                     + "\tPopulation size: " + populationSize + "\n"
                     + "\tNumber of simulation tests per iteration: " + simulationRuns + "\n"
+                    + "\tInitial connection density: " + connectionDensity + "\n"
                     + "\tDemo network config path: " + genomePath + "\n"
                     + "\tRunning with the control case: " + control + "\n"
                     + "\tMorphology path: " + morphologyPath;
