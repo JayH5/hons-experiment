@@ -84,17 +84,17 @@ public final class MMNEATUtil {
 
         // Add all the operators, probability should sum to 1
         result.addOperation(0.5, new MMNEATCrossover());
-        result.addOperation(0.444, weightMutation);
-        result.addOperation(0.0005, new MMNEATMutateAddNode());
+        result.addOperation(0.443, weightMutation);
+        result.addOperation(0.001, new MMNEATMutateAddNode());
         result.addOperation(0.005, new NEATMutateAddLink());
-        result.addOperation(0.0005, new NEATMutateRemoveLink());
+        result.addOperation(0.001, new NEATMutateRemoveLink());
 
         // Add the sensor position mutator
-        result.addOperation(0.0495, new MMNEATMutatePositions(
+        result.addOperation(0.049, new MMNEATMutatePositions(
                 new SelectSensorsFixed(1), new MutatePerturbSensorPosition(1, 1)));
 
         // Add sensor mutation - use the smallest link perturb operation
-        result.addOperation(0.0005, new MMNEATMutateAddSensor(
+        result.addOperation(0.001, new MMNEATMutateAddSensor(
                 population.getInitialConnectionDensity(), new MutateRandomLinkWeight()));
 
 
