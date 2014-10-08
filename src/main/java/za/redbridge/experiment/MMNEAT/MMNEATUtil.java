@@ -18,6 +18,7 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATCrossover;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
+import za.redbridge.experiment.MMNEAT.training.opp.MutateRandomLinkWeight;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
 
@@ -94,7 +95,7 @@ public final class MMNEATUtil {
 
         // Add sensor mutation - use the smallest link perturb operation
         result.addOperation(0.005, new MMNEATMutateAddSensor(
-                population.getInitialConnectionDensity(), new MutatePerturbLinkWeight(0.02)));
+                population.getInitialConnectionDensity(), new MutateRandomLinkWeight()));
 
 
         result.getOperators().finalizeStructure();
