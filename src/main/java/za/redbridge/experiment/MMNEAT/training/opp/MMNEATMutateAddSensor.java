@@ -29,14 +29,18 @@ import za.redbridge.experiment.sensor.SensorType;
  */
 public class MMNEATMutateAddSensor extends NEATMutation {
 
+    private final SensorType sensorType;
     private final double connectionDensity;
     private final MutateLinkWeight weightMutator;
 
     /**
+     * @param sensorType the sensor type to add
      * @param connectionDensity the connection density to use when adding links to the new sensor
      * @param weightMutator the mutator that will initialize the links of the new sensor
      */
-    public MMNEATMutateAddSensor(double connectionDensity, MutateLinkWeight weightMutator) {
+    public MMNEATMutateAddSensor(SensorType sensorType, double connectionDensity,
+            MutateLinkWeight weightMutator) {
+        this.sensorType = sensorType;
         this.connectionDensity = connectionDensity;
         this.weightMutator = weightMutator;
     }
@@ -62,7 +66,7 @@ public class MMNEATMutateAddSensor extends NEATMutation {
                 -pop.getSensorBearingRange(), pop.getSensorBearingRange()));
         inputNeuron.setInputSensorOrientation(RangeRandomizer.randomize(rnd,
                 -pop.getSensorOrientationRange(), pop.getSensorOrientationRange()));
-        inputNeuron.setInputSensorType(pickRandomSensorType(rnd));
+        inputNeuron.setInputSensorType(sensorType);
         target.addInputNeuron(inputNeuron);
 
         // Get the list of all neurons that aren't input nodes or the bias node
@@ -98,19 +102,6 @@ public class MMNEATMutateAddSensor extends NEATMutation {
             weightMutator.mutateWeight(rnd, link, pop.getWeightRange());
         }
 
-    }
-
-    /**
-     * Add sensors with a preference for simple proximity sensors. Don't add bottom proximity as a
-     * single sensor is enough to detect the target area.
-     */
-    private static SensorType pickRandomSensorType(Random rnd) {
-        double random = rnd.nextDouble();
-        if (random < 0.3) {
-            return SensorType.ULTRASONIC;
-        } else {
-            return SensorType.PROXIMITY;
-        }
     }
 
 }

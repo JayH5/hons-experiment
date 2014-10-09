@@ -21,6 +21,7 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
 import za.redbridge.experiment.MMNEAT.training.opp.MutateRandomLinkWeight;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
+import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -93,9 +94,14 @@ public final class MMNEATUtil {
         result.addOperation(0.049, new MMNEATMutatePositions(
                 new SelectSensorsFixed(1), new MutatePerturbSensorPosition(1, 1)));
 
-        // Add sensor mutation - use the smallest link perturb operation
-        result.addOperation(0.001, new MMNEATMutateAddSensor(
-                population.getInitialConnectionDensity(), new MutateRandomLinkWeight()));
+        // Add sensor mutation
+        double connectionDensity = population.getInitialConnectionDensity();
+        // Proximity sensors "cheaper" prefer to evolve them
+        // they are also short range and produce 0 most of the time so perturb the weight more
+        result.addOperation(0.0006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
+                connectionDensity, new MutateRandomLinkWeight()));
+        result.addOperation(0.0004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
+                connectionDensity, new MutatePerturbLinkWeight(1)));
 
 
         result.getOperators().finalizeStructure();
