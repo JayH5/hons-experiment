@@ -56,7 +56,8 @@ public class GraphvizEngine {
                         + " (" + neuron.getId() + ")"
                         + "\\n" + mmneatNeuronGene.getInputSensorType() + "\" ];");
             } else {
-                writer.write(" [ label=\"" + neuron.getNeuronType() + "\" ];");
+                writer.write(" [ label=\"" + neuron.getNeuronType()
+                        + " (" + neuron.getId() + ")\" ];");
             }
             writer.newLine();
         }
