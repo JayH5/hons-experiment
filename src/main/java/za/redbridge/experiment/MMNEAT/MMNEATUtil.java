@@ -54,22 +54,23 @@ public final class MMNEATUtil {
         // Create compound operator for weight mutation
         CompoundOperator weightMutation = new CompoundOperator();
         weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(1), new MutatePerturbLinkWeight(0.02)));
+                new NEATMutateWeights(new SelectFixed(1), new MutatePerturbLinkWeight(0.004)));
         weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(2), new MutatePerturbLinkWeight(0.02)));
+                new NEATMutateWeights(new SelectFixed(2), new MutatePerturbLinkWeight(0.004)));
         weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(3), new MutatePerturbLinkWeight(0.02)));
+                new NEATMutateWeights(new SelectFixed(3), new MutatePerturbLinkWeight(0.004)));
+        weightMutation.getComponents().add(0.1125,
+                new NEATMutateWeights(new SelectProportion(0.004),
+                        new MutatePerturbLinkWeight(0.004)));
+        weightMutation.getComponents().add(0.1125,
+                new NEATMutateWeights(new SelectFixed(1), new MutatePerturbLinkWeight(0.2)));
+        weightMutation.getComponents().add(0.1125,
+                new NEATMutateWeights(new SelectFixed(2), new MutatePerturbLinkWeight(0.2)));
+        weightMutation.getComponents().add(0.1125,
+                new NEATMutateWeights(new SelectFixed(3), new MutatePerturbLinkWeight(0.2)));
         weightMutation.getComponents().add(0.1125,
                 new NEATMutateWeights(new SelectProportion(0.02),
-                        new MutatePerturbLinkWeight(0.02)));
-        weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(1), new MutatePerturbLinkWeight(1)));
-        weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(2), new MutatePerturbLinkWeight(1)));
-        weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectFixed(3), new MutatePerturbLinkWeight(1)));
-        weightMutation.getComponents().add(0.1125,
-                new NEATMutateWeights(new SelectProportion(0.02), new MutatePerturbLinkWeight(1)));
+                        new MutatePerturbLinkWeight(0.2)));
         weightMutation.getComponents().add(0.03,
                 new NEATMutateWeights(new SelectFixed(1), new MutateResetLinkWeight()));
         weightMutation.getComponents().add(0.03,
