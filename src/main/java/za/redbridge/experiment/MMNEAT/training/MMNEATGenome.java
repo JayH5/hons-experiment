@@ -122,13 +122,13 @@ public class MMNEATGenome extends NEATGenome {
         // first bias
         int innovationID = 0;
         NEATNeuronGene biasGene =
-                new MMNEATNeuronGene(NEATNeuronType.Bias, af, inputCount, innovationID++);
+                new MMNEATNeuronGene(NEATNeuronType.Bias, af, 0, innovationID++);
         neurons.add(biasGene);
 
         // then inputs - minimal set is one of each sensor type
         for (int i = 0; i < inputCount; i++) {
             MMNEATNeuronGene gene =
-                    new MMNEATNeuronGene(NEATNeuronType.Input, af, i, innovationID++);
+                    new MMNEATNeuronGene(NEATNeuronType.Input, af, i + 1, innovationID++);
             neurons.add(gene);
 
             double bearing = RangeRandomizer.randomize(rnd, -population.getSensorBearingRange(),
