@@ -18,7 +18,6 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATCrossover;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
-import za.redbridge.experiment.MMNEAT.training.opp.MutateRandomLinkWeight;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
 import za.redbridge.experiment.sensor.SensorType;
@@ -100,7 +99,7 @@ public final class MMNEATUtil {
         // Proximity sensors "cheaper" prefer to evolve them
         // they are also short range and produce 0 most of the time so perturb the weight more
         result.addOperation(0.0006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
-                connectionDensity, new MutateRandomLinkWeight()));
+                connectionDensity, new MutateResetLinkWeight()));
         result.addOperation(0.0004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
                 connectionDensity, new MutatePerturbLinkWeight(0.2)));
 
