@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 
 /**
  * Basic methods to save a genome as a Graphviz ".dot" file so that it can be visualized.
+ * This code is pretty clumsy but works reasonably.
  *
  * Created by jamie on 2014/10/06.
  */
@@ -46,6 +48,9 @@ public class GraphvizEngine {
 
     private static void writeNeuronGenes(BufferedWriter writer, List<NEATNeuronGene> neurons)
             throws IOException {
+        List<NEATNeuronGene> inputs = new ArrayList<>();
+        List<NEATNeuronGene> outputs = new ArrayList<>();
+
         for (NEATNeuronGene neuron : neurons) {
             writer.write("  ");
             writer.write(String.valueOf(neuron.getId()));
@@ -60,7 +65,33 @@ public class GraphvizEngine {
                         + " (" + neuron.getId() + ")\" ];");
             }
             writer.newLine();
+
+            NEATNeuronType type = neuron.getNeuronType();
+            if (type == NEATNeuronType.Input || type == NEATNeuronType.Bias) {
+                inputs.add(neuron);
+            } else if (type == NEATNeuronType.Output) {
+                outputs.add(neuron);
+            }
         }
+
+        // Set the same rank for all inputs/outputs
+        writer.write("  ");
+        writer.write("{ rank=same ");
+        for (NEATNeuronGene neuron : inputs) {
+            writer.write(String.valueOf(neuron.getId()));
+            writer.write(" ");
+        }
+        writer.write("}");
+        writer.newLine();
+
+        writer.write("  ");
+        writer.write("{ rank=same ");
+        for (NEATNeuronGene neuron : outputs) {
+            writer.write(String.valueOf(neuron.getId()));
+            writer.write(" ");
+        }
+        writer.write("}");
+        writer.newLine();
     }
 
     private static void writeLinkGenes(BufferedWriter writer, List<NEATLinkGene> links)
@@ -97,18 +128,32 @@ public class GraphvizEngine {
         throws IOException {
         // Reconstruct node information from links (only works for constant inputs/outputs)
         Map<Integer, String> nodes = new HashMap<>();
+        List<Integer> inputs = new ArrayList<>();
+        List<Integer> outputs = new ArrayList<>();
         NEATLink[] links = network.getLinks();
         int inputCount = network.getInputCount();
         int outputCount = network.getOutputCount();
         for (NEATLink link : links) {
             int fromNeuron = link.getFromNeuron();
             if (!nodes.containsKey(fromNeuron)) {
-                nodes.put(fromNeuron, labelForNode(fromNeuron, inputCount, outputCount));
+                NEATNeuronType type = typeForNode(fromNeuron, inputCount, outputCount);
+                nodes.put(fromNeuron, type.toString());
+
+                if (type == NEATNeuronType.Input || type == NEATNeuronType.Bias) {
+                    inputs.add(fromNeuron);
+                } else if (type == NEATNeuronType.Output) {
+                    outputs.add(fromNeuron);
+                }
             }
 
             int toNeuron = link.getToNeuron();
             if (!nodes.containsKey(toNeuron)) {
-                nodes.put(toNeuron, labelForNode(toNeuron, inputCount, outputCount));
+                NEATNeuronType type = typeForNode(toNeuron, inputCount, outputCount);
+                nodes.put(toNeuron, type.toString());
+
+                if (type == NEATNeuronType.Output) {
+                    outputs.add(toNeuron);
+                }
             }
         }
 
@@ -119,22 +164,41 @@ public class GraphvizEngine {
             writer.write(" [ label=\"" + entry.getValue() + " (" + entry.getKey() + ")\" ]");
             writer.newLine();
         }
+
+        // Set the same rank for all inputs/outputs
+        writer.write("  ");
+        writer.write("{ rank=same ");
+        for (Integer id : inputs) {
+            writer.write(String.valueOf(id));
+            writer.write(" ");
+        }
+        writer.write("}");
+        writer.newLine();
+
+        writer.write("  ");
+        writer.write("{ rank=same ");
+        for (Integer id : outputs) {
+            writer.write(String.valueOf(id));
+            writer.write(" ");
+        }
+        writer.write("}");
+        writer.newLine();
     }
 
-    private static String labelForNode(int node, int inputCount, int outputCount) {
-        if (node == 0) {
-            return NEATNeuronType.Bias.toString();
+    private static NEATNeuronType typeForNode(int node, int inputCount, int outputCount) {
+        if (node < inputCount) {
+            return NEATNeuronType.Input;
         }
 
-        if (node < inputCount + 1) {
-            return NEATNeuronType.Input.toString();
+        if (node == inputCount) {
+            return NEATNeuronType.Bias;
         }
 
         if (node < inputCount + outputCount + 1) {
-            return NEATNeuronType.Output.toString();
+            return NEATNeuronType.Output;
         }
 
-        return NEATNeuronType.Hidden.toString();
+        return NEATNeuronType.Hidden;
     }
 
     private static void writeLinks(BufferedWriter writer, NEATLink[] links)
