@@ -102,7 +102,7 @@ public final class MMNEATUtil {
         result.addOperation(0.0006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
                 connectionDensity, new MutateRandomLinkWeight()));
         result.addOperation(0.0004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
-                connectionDensity, new MutatePerturbLinkWeight(1)));
+                connectionDensity, new MutatePerturbLinkWeight(0.2)));
 
 
         result.getOperators().finalizeStructure();
