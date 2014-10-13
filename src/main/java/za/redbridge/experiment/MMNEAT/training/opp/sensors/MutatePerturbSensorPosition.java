@@ -6,6 +6,7 @@ import org.encog.neural.neat.NEATPopulation;
 import java.util.Random;
 
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
+import za.redbridge.simulator.Utils;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -38,11 +39,11 @@ public class MutatePerturbSensorPosition implements MutateSensorPosition {
 
     @Override
     public void mutatePosition(Random rnd, MMNEATNeuronGene neuronGene, double bearingRange,
-                               double orientationRange) {
+            double orientationRange) {
         // Mutate bearing
         double delta = rnd.nextGaussian() * bearingSigma;
         double bearing = neuronGene.getInputSensorBearing() + delta;
-        bearing = NEATPopulation.clampWeight(bearing, bearingRange);
+        bearing = Utils.wrapAngle(bearing);
         neuronGene.setInputSensorBearing(bearing);
 
         // And orientation...
