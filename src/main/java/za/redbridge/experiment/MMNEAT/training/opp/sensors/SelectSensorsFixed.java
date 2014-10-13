@@ -33,15 +33,15 @@ public class SelectSensorsFixed implements SelectSensors {
     }
 
     @Override
-    public List<MMNEATNeuronGene> selectLinks(Random rnd, MMNEATGenome genome) {
+    public List<MMNEATNeuronGene> selectSensors(Random rnd, MMNEATGenome genome) {
         final List<MMNEATNeuronGene> result = new ArrayList<>();
-        final int count = Math.min(sensorCount, genome.getInputNeuronsChromosome().size());
+        final int count = Math.min(sensorCount, genome.getConfigurableSensorCount());
 
         while (result.size() < count) {
             final int idx = rnd.nextInt(genome.getInputNeuronsChromosome().size());
-            final MMNEATNeuronGene link = genome.getInputNeuronsChromosome().get(idx);
-            if (!result.contains(link)) {
-                result.add(link);
+            final MMNEATNeuronGene sensor = genome.getInputNeuronsChromosome().get(idx);
+            if (sensor.getInputSensorType().isConfigurable() && !result.contains(sensor)) {
+                result.add(sensor);
             }
         }
         return result;

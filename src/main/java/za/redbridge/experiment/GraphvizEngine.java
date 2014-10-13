@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
+import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Basic methods to save a genome as a Graphviz ".dot" file so that it can be visualized.
@@ -57,9 +58,16 @@ public class GraphvizEngine {
             if (neuron.getNeuronType() == NEATNeuronType.Input
                     && neuron instanceof MMNEATNeuronGene) {
                 MMNEATNeuronGene mmneatNeuronGene = (MMNEATNeuronGene) neuron;
+                SensorType sensorType = mmneatNeuronGene.getInputSensorType();
                 writer.write(" [ label=\"" + neuron.getNeuronType()
                         + " (" + neuron.getId() + ")"
-                        + "\\n" + mmneatNeuronGene.getInputSensorType() + "\" ];");
+                        + "\\n" + formatSensorTypeString(sensorType));
+                if (sensorType.isConfigurable()) {
+                    writer.write("\\n" + String.format("B:%.2f, O:%.2f",
+                            mmneatNeuronGene.getInputSensorBearing(),
+                            mmneatNeuronGene.getInputSensorOrientation()));
+                }
+                writer.write("\" ];");
             } else {
                 writer.write(" [ label=\"" + neuron.getNeuronType()
                         + " (" + neuron.getId() + ")\" ];");
@@ -209,5 +217,13 @@ public class GraphvizEngine {
             writer.write(" [ label=\"" + String.format("%.3f", link.getWeight()) + "\" ];");
             writer.newLine();
         }
+    }
+
+    private static String formatSensorTypeString(SensorType sensorType) {
+        String str = sensorType.toString();
+        str = str.replace('_', ' ');
+        str = str.toLowerCase();
+        str = Character.toUpperCase(str.charAt(0)) + str.substring(1);
+        return str;
     }
 }

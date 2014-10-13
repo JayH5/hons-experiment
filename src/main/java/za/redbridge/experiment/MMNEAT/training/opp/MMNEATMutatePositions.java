@@ -52,7 +52,7 @@ public class MMNEATMutatePositions extends NEATMutation {
         double sensorOrientationRange =
                 ((MMNEATPopulation)getOwner().getPopulation()).getSensorOrientationRange();
 
-        List<MMNEATNeuronGene> sensors = sensorSelection.selectLinks(rnd, target);
+        List<MMNEATNeuronGene> sensors = sensorSelection.selectSensors(rnd, target);
         for (MMNEATNeuronGene sensor : sensors) {
             positionMutation
                     .mutatePosition(rnd, sensor, sensorBearingRange, sensorOrientationRange);

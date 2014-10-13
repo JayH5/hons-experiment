@@ -10,9 +10,19 @@ import za.redbridge.simulator.sensor.AgentSensor;
  */
 public enum SensorType {
 
-    BOTTOM_PROXIMITY,
-    PROXIMITY,
-    ULTRASONIC;
+    BOTTOM_PROXIMITY(false),
+    PROXIMITY(true),
+    ULTRASONIC(true);
+
+    private final boolean configurable;
+
+    SensorType(boolean configurable) {
+        this.configurable = configurable;
+    }
+
+    public boolean isConfigurable() {
+        return configurable;
+    }
 
     public AgentSensor getSensor(float bearing, float orientation) {
         switch (this) {
@@ -25,4 +35,5 @@ public enum SensorType {
         }
         return null;
     }
+
 }

@@ -24,10 +24,10 @@ public interface SelectSensors {
     void init(EvolutionaryAlgorithm theTrainer);
 
     /**
-     * Select links from the specified genome.
+     * Select sensors from the specified genome.
      * @param rnd A random number generator.
      * @param genome The genome to select from.
-     * @return A List of link genomes.
+     * @return A List of sensor genomes.
      */
-    List<MMNEATNeuronGene> selectLinks(Random rnd, MMNEATGenome genome);
+    List<MMNEATNeuronGene> selectSensors(Random rnd, MMNEATGenome genome);
 }

@@ -28,6 +28,8 @@ public class MMNEATGenome extends NEATGenome {
 
     private MMNEATNeuronGene biasGene;
 
+    private int configurableSensorCount;
+
     /**
      * Construct a genome by copying another.
      *
@@ -90,6 +92,7 @@ public class MMNEATGenome extends NEATGenome {
         if (!neurons.stream().allMatch(o -> o instanceof MMNEATNeuronGene)) {
             throw new ClassCastException("Neuron gene is not a MMNEAT neuron gene");
         }
+
         List<NEATNeuronGene> ourNeurons = getNeuronsChromosome();
         ourNeurons.addAll(neurons);
 
@@ -131,17 +134,19 @@ public class MMNEATGenome extends NEATGenome {
                     new MMNEATNeuronGene(NEATNeuronType.Input, af, i + 1, innovationID++);
             neurons.add(gene);
 
-            double bearing = RangeRandomizer.randomize(rnd, -population.getSensorBearingRange(),
-                    population.getSensorBearingRange());
-            gene.setInputSensorBearing(bearing);
-
-            double orientation = RangeRandomizer.randomize(rnd,
-                    -population.getSensorOrientationRange(),
-                    population.getSensorOrientationRange());
-            gene.setInputSensorOrientation(orientation);
-
             SensorType sensorType = sensorTypes[i];
             gene.setInputSensorType(sensorType);
+
+            if (sensorType.isConfigurable()) {
+                double bearing = RangeRandomizer.randomize(rnd, -population.getSensorBearingRange(),
+                        population.getSensorBearingRange());
+                gene.setInputSensorBearing(bearing);
+
+                double orientation = RangeRandomizer.randomize(rnd,
+                        -population.getSensorOrientationRange(),
+                        population.getSensorOrientationRange());
+                gene.setInputSensorOrientation(orientation);
+            }
         }
 
         // then outputs
@@ -191,12 +196,16 @@ public class MMNEATGenome extends NEATGenome {
     }
 
     private void initNeuronLists() {
+        configurableSensorCount = 0;
         final List<NEATNeuronGene> neurons = getNeuronsChromosome();
         for (NEATNeuronGene neuron : neurons) {
             MMNEATNeuronGene neuronGene = (MMNEATNeuronGene) neuron;
             switch (neuron.getNeuronType()) {
                 case Input:
                     inputsList.add(neuronGene);
+                    if (neuronGene.getInputSensorType().isConfigurable()) {
+                        configurableSensorCount++;
+                    }
                     break;
                 case Output:
                     outputsList.add(neuronGene);
@@ -230,6 +239,13 @@ public class MMNEATGenome extends NEATGenome {
     @Override
     public int getInputCount() {
         return inputsList.size();
+    }
+
+    /**
+     * Get the number of sensors that can be configured.
+     */
+    public int getConfigurableSensorCount() {
+        return configurableSensorCount;
     }
 
     public MMNEATNeuronGene getBiasGene() {
