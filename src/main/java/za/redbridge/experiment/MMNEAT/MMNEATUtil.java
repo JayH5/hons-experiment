@@ -92,7 +92,7 @@ public final class MMNEATUtil {
 
         // Add the sensor position mutator
         result.addOperation(0.049, new MMNEATMutatePositions(
-                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(1, 1)));
+                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.1, 0.1)));
 
         // Add sensor mutation
         double connectionDensity = population.getInitialConnectionDensity();
