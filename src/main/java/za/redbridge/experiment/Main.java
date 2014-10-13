@@ -106,7 +106,7 @@ public class Main {
 
     private static class Args {
         @Parameter(names = "-c", description = "Simulation config file to load")
-        private String configFile = "config/simulation.yml";
+        private String configFile = "config/mediumSimConfig.yml";
 
         @Parameter(names = "-i", description = "Number of simulation iterations to train for")
         private int numIterations = 250;

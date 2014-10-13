@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.SensorMorphology;
+import za.redbridge.simulator.FitnessStats;
 import za.redbridge.simulator.Simulation;
 import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
@@ -63,7 +65,7 @@ public class ScoreCalculator implements CalculateScore {
         double fitness = 0;
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
-            fitness += simulation.getFitness();
+            fitness += getHomogeneousFitness(simulation.getFitness());
         }
 
         // Get the fitness and update the total score
@@ -80,6 +82,14 @@ public class ScoreCalculator implements CalculateScore {
         performanceStats.addValue(duration.toMillis());
 
         return score;
+    }
+
+    private double getHomogeneousFitness(Map<Phenotype, FitnessStats> fitnessMap) {
+        double fitness = 0;
+        for (FitnessStats stats : fitnessMap.values()) {
+            fitness += stats.getTaskFitness();
+        }
+        return fitness;
     }
 
     public void demo(MLMethod method) {
