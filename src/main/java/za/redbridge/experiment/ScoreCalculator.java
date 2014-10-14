@@ -65,7 +65,8 @@ public class ScoreCalculator implements CalculateScore {
         double fitness = 0;
         for (int i = 0; i < simulationRuns; i++) {
             simulation.run();
-            fitness += getHomogeneousFitness(simulation.getFitness());
+            fitness += simulation.getFitness().getTeamFitness();
+            fitness += calculateTimeBonus(simulation.getStepNumber());
         }
 
         // Get the fitness and update the total score
@@ -84,12 +85,8 @@ public class ScoreCalculator implements CalculateScore {
         return score;
     }
 
-    private double getHomogeneousFitness(Map<Phenotype, FitnessStats> fitnessMap) {
-        double fitness = 0;
-        for (FitnessStats stats : fitnessMap.values()) {
-            fitness += stats.getTaskFitness();
-        }
-        return fitness;
+    private double calculateTimeBonus(long simSteps) {
+        return 100 * (1.0 - (double) simSteps / simConfig.getSimulationIterations());
     }
 
     public void demo(MLMethod method) {
