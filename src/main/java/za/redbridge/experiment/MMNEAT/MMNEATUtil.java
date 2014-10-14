@@ -19,6 +19,7 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutateResetSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
 import za.redbridge.experiment.sensor.SensorType;
 
@@ -84,15 +85,29 @@ public final class MMNEATUtil {
         result.setChampMutation(weightMutation);
 
         // Add all the operators, probability should sum to 1
-        result.addOperation(0.5, new MMNEATCrossover());
+        result.addOperation(0.4, new MMNEATCrossover());
         result.addOperation(0.443, weightMutation);
         result.addOperation(0.001, new MMNEATMutateAddNode());
         result.addOperation(0.005, new NEATMutateAddLink());
         result.addOperation(0.001, new NEATMutateRemoveLink());
 
         // Add the sensor position mutator
-        result.addOperation(0.049, new MMNEATMutatePositions(
-                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.1, 0.1)));
+        CompoundOperator positionMutation = new CompoundOperator();
+        positionMutation.getComponents().add(0.05, new MMNEATMutatePositions(
+                new SelectSensorsFixed(1), new MutateResetSensorPosition()));
+        positionMutation.getComponents().add(0.05, new MMNEATMutatePositions(
+                new SelectSensorsFixed(2), new MutateResetSensorPosition()));
+        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
+                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.01, 0.005)));
+        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
+                new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.01, 0.005)));
+        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
+                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.1, 0.05)));
+        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
+                new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.1, 0.05)));
+        positionMutation.getComponents().finalizeStructure();
+
+        result.addOperation(0.149, positionMutation);
 
         // Add sensor mutation
         double connectionDensity = population.getInitialConnectionDensity();
