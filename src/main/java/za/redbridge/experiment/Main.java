@@ -6,8 +6,6 @@ import com.beust.jcommander.Parameter;
 import org.encog.Encog;
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 import org.encog.neural.neat.NEATNetwork;
-import org.encog.neural.neat.NEATPopulation;
-import org.encog.neural.neat.NEATUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,8 @@ import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
 import za.redbridge.experiment.MMNEAT.SensorMorphology;
+import za.redbridge.experiment.NEAT.NEATPopulation;
+import za.redbridge.experiment.NEAT.NEATUtil;
 import za.redbridge.simulator.config.SimConfig;
 
 /**

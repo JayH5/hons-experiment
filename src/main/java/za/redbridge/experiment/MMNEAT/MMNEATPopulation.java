@@ -1,12 +1,12 @@
 package za.redbridge.experiment.MMNEAT;
 
 import org.encog.ml.ea.species.BasicSpecies;
-import org.encog.neural.neat.NEATPopulation;
 import org.encog.neural.neat.training.NEATGenome;
 import org.encog.neural.neat.training.NEATInnovationList;
 
 import java.util.Random;
 
+import za.redbridge.experiment.NEAT.NEATPopulation;
 import za.redbridge.experiment.sensor.SensorType;
 
 /**
@@ -19,8 +19,6 @@ public class MMNEATPopulation extends NEATPopulation {
     private final double sensorBearingRange = Math.PI;
 
     private final double sensorOrientationRange = Math.PI / 2;
-
-    private final double weightRange = 1.0;
 
     /**
      * An empty constructor for serialization.
@@ -71,11 +69,6 @@ public class MMNEATPopulation extends NEATPopulation {
 
         // create initial innovations
         setInnovations(new NEATInnovationList(this));
-    }
-
-    @Override
-    public double getWeightRange() {
-        return weightRange;
     }
 
     public double getSensorOrientationRange() {
