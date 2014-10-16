@@ -7,7 +7,7 @@ repositories {
 
 dependencies {
     compile 'za.redbridge.simulator:simulator:0.6-SNAPSHOT'
-    compile 'org.encog:encog-core:3.3.0-SNAPSHOT'
+    compile 'org.encog:encog-core:3.3.0'
     compile 'com.beust:jcommander:1.35'
     compile 'ch.qos.logback:logback-classic:1.1.2'
 }
