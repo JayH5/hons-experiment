@@ -86,10 +86,10 @@ public final class MMNEATUtil {
 
         // Add all the operators, probability should sum to 1
         result.addOperation(0.4, new MMNEATCrossover());
-        result.addOperation(0.443, weightMutation);
-        result.addOperation(0.001, new MMNEATMutateAddNode());
-        result.addOperation(0.005, new NEATMutateAddLink());
-        result.addOperation(0.001, new NEATMutateRemoveLink());
+        result.addOperation(0.475, weightMutation);
+        result.addOperation(0.01, new MMNEATMutateAddNode());
+        result.addOperation(0.01, new NEATMutateAddLink());
+        result.addOperation(0.005, new NEATMutateRemoveLink());
 
         // Add the sensor position mutator
         CompoundOperator positionMutation = new CompoundOperator();
@@ -107,7 +107,7 @@ public final class MMNEATUtil {
                 new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.1, 0.05)));
         positionMutation.getComponents().finalizeStructure();
 
-        result.addOperation(0.149, positionMutation);
+        result.addOperation(0.099, positionMutation);
 
         // Add sensor mutation
         double connectionDensity = population.getInitialConnectionDensity();
