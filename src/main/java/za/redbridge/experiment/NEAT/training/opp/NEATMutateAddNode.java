@@ -12,8 +12,6 @@ import org.encog.neural.neat.training.opp.NEATMutation;
 
 import java.util.Random;
 
-import za.redbridge.experiment.MMNEAT.ActivationSteepenedShiftedSigmoid;
-
 /**
  * NEATMutateAddNode implementation that uses the shifted steepened shifted sigmoid activation
  * function for the new nodes.
@@ -75,7 +73,7 @@ public class NEATMutateAddNode extends NEATMutation {
                 .getInnovations().findInnovationSplit(from, to);
 
         // add the splitting neuron
-        final ActivationFunction af = new ActivationSteepenedShiftedSigmoid();
+        final ActivationFunction af = pop.getActivationFunctions().pickFirst();
 
         target.getNeuronsChromosome().add(new NEATNeuronGene(NEATNeuronType.Hidden, af,
                 innovation.getNeuronID(), innovation.getInnovationID()));
