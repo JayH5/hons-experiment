@@ -86,7 +86,7 @@ public final class MMNEATUtil {
 
         // Add all the operators, probability should sum to 1
         result.addOperation(0.4, new MMNEATCrossover());
-        result.addOperation(0.475, weightMutation);
+        result.addOperation(0.465, weightMutation);
         result.addOperation(0.01, new MMNEATMutateAddNode());
         result.addOperation(0.01, new NEATMutateAddLink());
         result.addOperation(0.005, new NEATMutateRemoveLink());
@@ -107,15 +107,15 @@ public final class MMNEATUtil {
                 new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.1, 0.05)));
         positionMutation.getComponents().finalizeStructure();
 
-        result.addOperation(0.099, positionMutation);
+        result.addOperation(0.1, positionMutation);
 
         // Add sensor mutation
         double connectionDensity = 0.1;
         // Proximity sensors "cheaper" prefer to evolve them
         // they are also short range and produce 0 most of the time so perturb the weight more
-        result.addOperation(0.0006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
+        result.addOperation(0.006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
                 connectionDensity, new MutateResetLinkWeight()));
-        result.addOperation(0.0004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
+        result.addOperation(0.004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
                 connectionDensity, new MutatePerturbLinkWeight(0.2)));
 
 
