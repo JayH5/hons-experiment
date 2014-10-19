@@ -110,7 +110,7 @@ public final class MMNEATUtil {
         result.addOperation(0.099, positionMutation);
 
         // Add sensor mutation
-        double connectionDensity = population.getInitialConnectionDensity();
+        double connectionDensity = 0.1;
         // Proximity sensors "cheaper" prefer to evolve them
         // they are also short range and produce 0 most of the time so perturb the weight more
         result.addOperation(0.0006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
