@@ -236,6 +236,16 @@ public class MMNEATGenome extends NEATGenome {
         getInputNeuronsChromosome().add(inputNeuron);
     }
 
+    public void removeInputNeuron(MMNEATNeuronGene inputNeuron) {
+        if (inputNeuron.getNeuronType() != NEATNeuronType.Input) {
+            throw new IllegalArgumentException("Not an input neuron");
+        }
+
+        getNeuronsChromosome().remove(inputNeuron);
+
+        getInputNeuronsChromosome().remove(inputNeuron);
+    }
+
     @Override
     public int getInputCount() {
         return inputsList.size();

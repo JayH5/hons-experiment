@@ -6,7 +6,6 @@ import org.encog.ml.ea.opp.selection.TruncationSelection;
 import org.encog.ml.ea.train.basic.TrainEA;
 import org.encog.neural.neat.NEATPopulation;
 import org.encog.neural.neat.training.opp.NEATMutateAddLink;
-import org.encog.neural.neat.training.opp.NEATMutateRemoveLink;
 import org.encog.neural.neat.training.opp.NEATMutateWeights;
 import org.encog.neural.neat.training.opp.links.MutatePerturbLinkWeight;
 import org.encog.neural.neat.training.opp.links.MutateResetLinkWeight;
@@ -18,6 +17,7 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATCrossover;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateRemoveLink;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutateResetSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
@@ -89,7 +89,7 @@ public final class MMNEATUtil {
         result.addOperation(0.465, weightMutation);
         result.addOperation(0.01, new MMNEATMutateAddNode());
         result.addOperation(0.01, new NEATMutateAddLink());
-        result.addOperation(0.005, new NEATMutateRemoveLink());
+        result.addOperation(0.005, new MMNEATMutateRemoveLink());
 
         // Add the sensor position mutator
         CompoundOperator positionMutation = new CompoundOperator();
