@@ -29,6 +29,11 @@ import za.redbridge.experiment.sensor.SensorType;
  */
 public class MMNEATMutateAddSensor extends NEATMutation {
 
+    /**
+     * Do not add sensors to genomes that have this number of sensors or more.
+     */
+    public static final int MAX_SENSORS = 10;
+
     private final SensorType sensorType;
     private final double connectionDensity;
     private final MutateLinkWeight weightMutator;
@@ -50,6 +55,11 @@ public class MMNEATMutateAddSensor extends NEATMutation {
             int offspringIndex) {
         final MMNEATGenome target =
                 (MMNEATGenome) obtainGenome(parents, parentIndex, offspring, offspringIndex);
+
+        if (target.getInputCount() >= MAX_SENSORS) {
+            // Don't add sensors to genomes with a lot of sensors
+            return;
+        }
 
         final MMNEATPopulation pop = ((MMNEATPopulation) target.getPopulation());
 
