@@ -14,7 +14,8 @@ import org.encog.neural.neat.training.opp.links.MutatePerturbLinkWeight;
 import org.encog.neural.neat.training.opp.links.MutateResetLinkWeight;
 import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
-import org.encog.neural.neat.training.species.OriginalNEATSpeciation;
+
+import za.redbridge.experiment.NEAT.training.species.NEATSpeciation;
 
 /**
  * NEATUtil for regular NEAT network (no HyperNEAT) with link weight range of -1.0 to 1.0.
@@ -42,7 +43,7 @@ public final class NEATUtil {
     public static TrainEA constructNEATTrainer(NEATPopulation population,
             CalculateScore calculateScore) {
         TrainEA result = new TrainEA(population, calculateScore);
-        result.setSpeciation(new OriginalNEATSpeciation());
+        result.setSpeciation(new NEATSpeciation());
 
         result.setSelection(new TruncationSelection(result, 0.3));
         CompoundOperator weightMutation = new CompoundOperator();

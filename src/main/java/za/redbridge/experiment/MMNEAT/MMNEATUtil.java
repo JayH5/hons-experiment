@@ -11,7 +11,6 @@ import org.encog.neural.neat.training.opp.links.MutatePerturbLinkWeight;
 import org.encog.neural.neat.training.opp.links.MutateResetLinkWeight;
 import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
-import org.encog.neural.neat.training.species.OriginalNEATSpeciation;
 
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATCrossover;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
@@ -21,6 +20,7 @@ import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateRemoveLink;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutateResetSensorPosition;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
+import za.redbridge.experiment.MMNEAT.training.species.MMNEATSpeciation;
 import za.redbridge.experiment.sensor.SensorType;
 
 /**
@@ -46,7 +46,7 @@ public final class MMNEATUtil {
         final TrainEA result = new TrainEA(population, calculateScore);
 
         // Speciation
-        result.setSpeciation(new OriginalNEATSpeciation());
+        result.setSpeciation(new MMNEATSpeciation());
 
         // Selection
         result.setSelection(new TruncationSelection(result, 0.3));
