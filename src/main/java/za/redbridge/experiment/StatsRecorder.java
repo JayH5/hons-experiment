@@ -8,8 +8,10 @@ import org.encog.neural.neat.training.NEATGenome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -65,9 +67,13 @@ public class StatsRecorder {
     }
 
     private void initDirectories() {
+        String hostname = getHostname();
+        if (hostname == null) {
+            hostname = "unknown";
+        }
         String dateString = DATE_FORMAT.format(new Date());
 
-        directory = Paths.get("results", dateString);
+        directory = Paths.get("results", hostname + "-" + dateString);
         networksDir = directory.resolve("networks");
         initDirectory(networksDir);
     }
@@ -177,5 +183,25 @@ public class StatsRecorder {
         } catch (IOException e) {
             log.error("Failed to save network", e);
         }
+    }
+
+    private static String getHostname() {
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec("hostname");
+        } catch (IOException e) {
+            log.error("Unable to request hostname", e);
+            return null;
+        }
+
+        String hostname = null;
+        try (BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            hostname = reader.readLine();
+        } catch (IOException e) {
+            log.error("Failed to read stdout when requesting hostname", e);
+        }
+
+        return hostname;
     }
 }
