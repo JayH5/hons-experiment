@@ -14,3 +14,12 @@ dependencies {
 
 apply plugin: 'application'
 mainClassName = 'za.redbridge.experiment.Main'
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'za.redbridge.experiment.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
