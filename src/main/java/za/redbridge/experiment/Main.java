@@ -32,6 +32,8 @@ public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
+    private static final double CONVERGENCE_SCORE = 110;
+
     public static void main(String[] args) throws IOException {
         Args options = new Args();
         new JCommander(options, args);
@@ -86,6 +88,11 @@ public class Main {
         for (int i = 0; i < options.numIterations; i++) {
             train.iteration();
             statsRecorder.recordIterationStats();
+
+            if (train.getBestGenome().getScore() >= CONVERGENCE_SCORE) {
+                log.info("Convergence reached at epoch " + train.getIteration());
+                break;
+            }
         }
 
         log.debug("Training complete");
