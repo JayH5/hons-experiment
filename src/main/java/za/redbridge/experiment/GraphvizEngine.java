@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class GraphvizEngine {
     private static final Logger log = LoggerFactory.getLogger(GraphvizEngine.class);
 
     public static void saveGenome(NEATGenome genome, Path path) {
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.defaultCharset())) {
             writer.write("digraph G {");
             writer.newLine();
 
@@ -117,7 +118,7 @@ public class GraphvizEngine {
     }
 
     public static void saveNetwork(NEATNetwork network, Path path) {
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.defaultCharset())) {
             writer.write("digraph G {");
             writer.newLine();
 

@@ -89,8 +89,10 @@ public class MMNEATGenome extends NEATGenome {
             ourLinks.add(new NEATLinkGene(gene));
         }
 
-        if (!neurons.stream().allMatch(o -> o instanceof MMNEATNeuronGene)) {
-            throw new ClassCastException("Neuron gene is not a MMNEAT neuron gene");
+        for (NEATNeuronGene gene : neurons) {
+            if (!(gene instanceof MMNEATNeuronGene)) {
+                throw new ClassCastException("Neuron gene is not a MMNEAT neuron gene");
+            }
         }
 
         List<NEATNeuronGene> ourNeurons = getNeuronsChromosome();

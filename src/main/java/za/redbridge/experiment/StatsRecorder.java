@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -100,7 +101,7 @@ public class StatsRecorder {
     }
 
     private static void initStatsFile(Path path) {
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.defaultCharset())) {
             writer.write("epoch, max, min, mean, standev\n");
         } catch (IOException e) {
             log.error("Unable to initialize stats file", e);
@@ -153,7 +154,12 @@ public class StatsRecorder {
 
     private void saveStatsAsync(final Path path, final int epoch, final double max, final double min,
             final double mean, final double sd) {
-        executor.submit(() -> saveStats(path, epoch, max, min, mean, sd));
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                saveStats(path, epoch, max, min, mean, sd);
+            }
+        });
     }
 
     private static void saveStats(Path path, int epoch, double max, double min, double mean,
@@ -163,7 +169,8 @@ public class StatsRecorder {
         final OpenOption[] options = {
                 StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE
         };
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path, options))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path,
+                Charset.defaultCharset(), options))) {
             writer.append(line);
         } catch (IOException e) {
             log.error("Failed to append to log file", e);
@@ -171,9 +178,12 @@ public class StatsRecorder {
     }
 
     private void saveGenomeAsync(final NEATGenome genome, final String name) {
-        executor.submit(() -> {
-            GraphvizEngine.saveGenome(genome, networksDir.resolve(name + ".dot"));
-            saveNetwork(decodeGenome(genome), networksDir.resolve(name + ".ser"));
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                GraphvizEngine.saveGenome(genome, networksDir.resolve(name + ".dot"));
+                saveNetwork(decodeGenome(genome), networksDir.resolve(name + ".ser"));
+            }
         });
     }
 

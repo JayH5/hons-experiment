@@ -8,9 +8,6 @@ import org.encog.neural.neat.NEATNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
-
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.SensorMorphology;
@@ -50,7 +47,7 @@ public class ScoreCalculator implements CalculateScore {
 
     @Override
     public double calculateScore(MLMethod method) {
-        Instant start = Instant.now();
+        long start = System.nanoTime();
 
         NEATNetwork network = (NEATNetwork) method;
         RobotFactory robotFactory = new HomogeneousRobotFactory(getPhenotypeForNetwork(network),
@@ -77,8 +74,8 @@ public class ScoreCalculator implements CalculateScore {
 
         log.debug("Score calculation completed: " + score);
 
-        Duration duration = Duration.between(start, Instant.now());
-        performanceStats.addValue(duration.toMillis());
+        long duration = (System.nanoTime() - start) / 1000;
+        performanceStats.addValue(duration);
 
         return score;
     }
