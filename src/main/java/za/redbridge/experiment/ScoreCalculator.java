@@ -8,6 +8,8 @@ import org.encog.neural.neat.NEATNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.SensorMorphology;
@@ -74,7 +76,7 @@ public class ScoreCalculator implements CalculateScore {
 
         log.debug("Score calculation completed: " + score);
 
-        long duration = (System.nanoTime() - start) / 1000;
+        long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
         performanceStats.addValue(duration);
 
         return score;
