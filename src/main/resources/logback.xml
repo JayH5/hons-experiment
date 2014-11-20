@@ -10,7 +10,7 @@
     <timestamp key="byMinute" datePattern="yyyyMMdd'T'HHmm"/>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>results/${byMinute}/logback.log</file>
+        <file>results/${HOSTNAME}-${byMinute}/logback.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
