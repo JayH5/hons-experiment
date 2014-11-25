@@ -10,10 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
@@ -22,6 +18,10 @@ import za.redbridge.experiment.MMNEAT.SensorMorphology;
 import za.redbridge.experiment.NEAT.NEATPopulation;
 import za.redbridge.experiment.NEAT.NEATUtil;
 import za.redbridge.simulator.config.SimConfig;
+
+
+import static za.redbridge.experiment.Utils.isBlank;
+import static za.redbridge.experiment.Utils.readObjectFromFile;
 
 /**
  * Entry point for the experiment platform.
@@ -41,16 +41,17 @@ public class Main {
         log.info(options.toString());
 
         SimConfig simConfig;
-        if (options.configFile != null && !options.configFile.isEmpty()) {
+        if (!isBlank(options.configFile)) {
             simConfig = new SimConfig(options.configFile);
         } else {
             simConfig = new SimConfig();
         }
 
+        // Load the morphology
         SensorMorphology morphology = null;
         if (options.control) {
-            if (options.morphologyPath != null && !options.morphologyPath.isEmpty()) {
-                MMNEATNetwork network = (MMNEATNetwork) loadNetwork(options.morphologyPath);
+            if (!isBlank(options.morphologyPath)) {
+                MMNEATNetwork network = (MMNEATNetwork) readObjectFromFile(options.morphologyPath);
                 morphology = network.getSensorMorphology();
             } else {
                 morphology = new KheperaIIIMorphology();
@@ -60,24 +61,29 @@ public class Main {
         ScoreCalculator calculateScore =
                 new ScoreCalculator(simConfig, options.simulationRuns, morphology);
 
-        if (options.genomePath != null && !options.genomePath.isEmpty()) {
-            NEATNetwork network = loadNetwork(options.genomePath);
+        if (!isBlank(options.genomePath)) {
+            NEATNetwork network = (NEATNetwork) readObjectFromFile(options.genomePath);
             calculateScore.demo(network);
             return;
         }
 
+
         final NEATPopulation population;
-        if (!options.control) {
-            population = new MMNEATPopulation(2, options.populationSize);
+        if (!isBlank(options.populationPath)) {
+            population = (NEATPopulation) readObjectFromFile(options.populationPath);
         } else {
-            population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
+            if (!options.control) {
+                population = new MMNEATPopulation(2, options.populationSize);
+            } else {
+                population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
+            }
+            population.setInitialConnectionDensity(options.connectionDensity);
+            population.reset();
+
+            log.debug("Population initialized");
         }
-        population.setInitialConnectionDensity(options.connectionDensity);
-        population.reset();
 
-        log.debug("Population initialized");
-
-        final EvolutionaryAlgorithm train;
+        EvolutionaryAlgorithm train;
         if (!options.control) {
             train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
         } else {
@@ -85,7 +91,7 @@ public class Main {
         }
 
         final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
-        for (int i = 0; i < options.numIterations; i++) {
+        for (int i = train.getIteration(); i < options.numIterations; i++) {
             train.iteration();
             statsRecorder.recordIterationStats();
 
@@ -97,18 +103,6 @@ public class Main {
 
         log.debug("Training complete");
         Encog.getInstance().shutdown();
-    }
-
-    static NEATNetwork loadNetwork(String filepath) {
-        NEATNetwork network = null;
-        Path path = Paths.get(filepath);
-        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(path))) {
-            network = (NEATNetwork) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            log.error("Unable to load network from file", e);
-        }
-
-        return network;
     }
 
     private static class Args {
@@ -139,6 +133,10 @@ public class Main {
                 + " control case")
         private String morphologyPath = null;
 
+        @Parameter(names = "--population", description = "To resume a previous experiment, provide"
+                + " the path to a serialized population")
+        private String populationPath = null;
+
         @Override
         public String toString() {
             return "Options: \n"
@@ -149,7 +147,8 @@ public class Main {
                     + "\tInitial connection density: " + connectionDensity + "\n"
                     + "\tDemo network config path: " + genomePath + "\n"
                     + "\tRunning with the control case: " + control + "\n"
-                    + "\tMorphology path: " + morphologyPath;
+                    + "\tMorphology path: " + morphologyPath + "\n"
+                    + "\tPopulation path: " + populationPath;
         }
     }
 }

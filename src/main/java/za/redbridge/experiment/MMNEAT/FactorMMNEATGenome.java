@@ -7,6 +7,7 @@ import org.encog.neural.neat.training.NEATGenome;
 import org.encog.neural.neat.training.NEATLinkGene;
 import org.encog.neural.neat.training.NEATNeuronGene;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +16,10 @@ import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
 /**
  * Created by jamie on 2014/09/08.
  */
-public class FactorMMNEATGenome implements NEATGenomeFactory {
+public class FactorMMNEATGenome implements NEATGenomeFactory, Serializable {
+
+    private static final long serialVersionUID = 602605192989600971L;
+
     @Override
     public NEATGenome factor(List<NEATNeuronGene> neurons, List<NEATLinkGene> links, int inputCount,
             int outputCount) {

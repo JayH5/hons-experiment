@@ -8,23 +8,20 @@ import org.encog.neural.neat.training.NEATGenome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import za.redbridge.experiment.NEAT.NEATPopulation;
+
+
+import static za.redbridge.experiment.Utils.getLoggingDirectory;
+import static za.redbridge.experiment.Utils.saveObjectToFile;
 
 /**
  * Class for recording stats each epoch.
@@ -35,22 +32,15 @@ public class StatsRecorder {
 
     private static final Logger log = LoggerFactory.getLogger(StatsRecorder.class);
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmm");
-
-    private static final String PERFORMANCE_STATS_FILENAME = "performance.csv";
-    private static final String SCORE_STATS_FILENAME = "scores.csv";
-    private static final String SENSOR_STATS_FILENAME = "sensors.csv";
-
     private final EvolutionaryAlgorithm trainer;
     private final ScoreCalculator calculator;
     private final boolean evolvingMorphology;
 
-    private final ExecutorService executor;
-
     private Genome currentBestGenome;
 
-    private Path directory;
-    private Path networksDir;
+    private Path rootDirectory;
+    private Path populationDirectory;
+    private Path bestNetworkDirectory;
 
     private Path performanceStatsFile;
     private Path scoreStatsFile;
@@ -61,22 +51,23 @@ public class StatsRecorder {
         this.calculator = calculator;
         this.evolvingMorphology = calculator.isEvolvingMorphology();
 
-        executor = Executors.newSingleThreadExecutor();
+        initFiles();
+    }
 
+    private void initFiles() {
         initDirectories();
         initStatsFiles();
     }
 
     private void initDirectories() {
-        String hostname = getHostname();
-        if (hostname == null) {
-            hostname = "unknown";
-        }
-        String dateString = DATE_FORMAT.format(new Date());
+        rootDirectory = getLoggingDirectory();
+        initDirectory(rootDirectory);
 
-        directory = Paths.get("results", hostname + "-" + dateString);
-        networksDir = directory.resolve("networks");
-        initDirectory(networksDir);
+        populationDirectory = rootDirectory.resolve("populations");
+        initDirectory(populationDirectory);
+
+        bestNetworkDirectory = rootDirectory.resolve("best networks");
+        initDirectory(bestNetworkDirectory);
     }
 
     private static void initDirectory(Path path) {
@@ -88,14 +79,14 @@ public class StatsRecorder {
     }
 
     private void initStatsFiles() {
-        performanceStatsFile = directory.resolve(PERFORMANCE_STATS_FILENAME);
+        performanceStatsFile = rootDirectory.resolve("performance.csv");
         initStatsFile(performanceStatsFile);
 
-        scoreStatsFile = directory.resolve(SCORE_STATS_FILENAME);
+        scoreStatsFile = rootDirectory.resolve("scores.csv");
         initStatsFile(scoreStatsFile);
 
         if (evolvingMorphology) {
-            sensorStatsFile = directory.resolve(SENSOR_STATS_FILENAME);
+            sensorStatsFile = rootDirectory.resolve("sensors.csv");
             initStatsFile(sensorStatsFile);
         }
     }
@@ -120,21 +111,47 @@ public class StatsRecorder {
             recordStats(calculator.getSensorStatistics(), epoch, sensorStatsFile);
         }
 
+        savePopulation((NEATPopulation) trainer.getPopulation(), epoch);
+
         // Check if new best network and save it if so
         NEATGenome newBestGenome = (NEATGenome) trainer.getBestGenome();
         if (newBestGenome != currentBestGenome) {
-            if (evolvingMorphology) {
-                log.info("New best genome! Epoch: " + epoch + ", score: "
-                        + newBestGenome.getScore() + ", num sensors: "
-                        + newBestGenome.getInputCount());
-            } else {
-                log.info("New best genome! Epoch: " + epoch + ", score: "
-                        + newBestGenome.getScore());
-            }
-
-            saveGenomeAsync(newBestGenome, "epoch" + epoch);
+            saveGenome(newBestGenome, epoch);
             currentBestGenome = newBestGenome;
         }
+    }
+
+    private void savePopulation(NEATPopulation population, int epoch) {
+        String filename = "epoch-" + epoch + ".ser";
+        Path path = populationDirectory.resolve(filename);
+        saveObjectToFile(population, path);
+    }
+
+    private void saveGenome(NEATGenome genome, int epoch) {
+        Path directory = bestNetworkDirectory.resolve("epoch-" + epoch);
+        initDirectory(directory);
+
+        String txt;
+        if (evolvingMorphology) {
+            log.info("New best genome! Epoch: " + epoch + ", score: " + genome.getScore()
+                    + ", num sensors: " + genome.getInputCount());
+            txt = String.format("epoch: %d, fitness: %f, sensors: %d", epoch, genome.getScore(),
+                    genome.getInputCount());
+        } else {
+            log.info("New best genome! Epoch: " + epoch + ", score: "  + genome.getScore());
+            txt = String.format("epoch: %d, fitness: %f", epoch, genome.getScore());
+        }
+        Path txtPath = directory.resolve("info.txt");
+        try (BufferedWriter writer = Files.newBufferedWriter(txtPath, Charset.defaultCharset())) {
+            writer.write(txt);
+        } catch (IOException e) {
+            log.error("Error writing best network info file", e);
+        }
+
+        NEATNetwork network = decodeGenome(genome);
+        saveObjectToFile(network, directory.resolve("network.ser"));
+
+        GraphvizEngine.saveGenome(genome, directory.resolve("graph.dot"));
     }
 
     private void recordStats(DescriptiveStatistics stats, int epoch, Path filepath) {
@@ -145,21 +162,11 @@ public class StatsRecorder {
         stats.clear();
 
         log.debug("Recording stats - max: " + max + ", mean: " + mean);
-        saveStatsAsync(filepath, epoch, max, min, mean, sd);
+        saveStats(filepath, epoch, max, min, mean, sd);
     }
 
     private NEATNetwork decodeGenome(Genome genome) {
         return (NEATNetwork) trainer.getCODEC().decode(genome);
-    }
-
-    private void saveStatsAsync(final Path path, final int epoch, final double max, final double min,
-            final double mean, final double sd) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                saveStats(path, epoch, max, min, mean, sd);
-            }
-        });
     }
 
     private static void saveStats(Path path, int epoch, double max, double min, double mean,
@@ -177,41 +184,4 @@ public class StatsRecorder {
         }
     }
 
-    private void saveGenomeAsync(final NEATGenome genome, final String name) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                GraphvizEngine.saveGenome(genome, networksDir.resolve(name + ".dot"));
-                saveNetwork(decodeGenome(genome), networksDir.resolve(name + ".ser"));
-            }
-        });
-    }
-
-    private static void saveNetwork(NEATNetwork network, Path path) {
-        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
-            out.writeObject(network);
-        } catch (IOException e) {
-            log.error("Failed to save network", e);
-        }
-    }
-
-    private static String getHostname() {
-        Process process;
-        try {
-            process = Runtime.getRuntime().exec("hostname");
-        } catch (IOException e) {
-            log.error("Unable to request hostname", e);
-            return null;
-        }
-
-        String hostname = null;
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            hostname = reader.readLine();
-        } catch (IOException e) {
-            log.error("Failed to read stdout when requesting hostname", e);
-        }
-
-        return hostname;
-    }
 }
