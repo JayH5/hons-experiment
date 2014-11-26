@@ -30,3 +30,6 @@ robots:
   mass: 0.7
   radius: 0.15
   colour: 0, 0, 0
+environment:
+  width: 40
+  height: 40
