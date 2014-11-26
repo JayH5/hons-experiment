@@ -110,7 +110,7 @@ public class Main {
         private String configFile = "config/mediumSimConfig.yml";
 
         @Parameter(names = "-i", description = "Number of simulation iterations to train for")
-        private int numIterations = 250;
+        private int numIterations = 500;
 
         @Parameter(names = "-p", description = "Initial population size")
         private int populationSize = 100;
