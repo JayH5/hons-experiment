@@ -33,3 +33,5 @@ robots:
 environment:
   width: 40
   height: 40
+targetArea:
+  span: 0.5
