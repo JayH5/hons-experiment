@@ -85,10 +85,10 @@ public final class MMNEATUtil {
         result.setChampMutation(weightMutation);
 
         // Add all the operators, probability should sum to 1
-        result.addOperation(0.4, new MMNEATCrossover());
-        result.addOperation(0.465, weightMutation);
-        result.addOperation(0.01, new MMNEATMutateAddNode());
-        result.addOperation(0.01, new NEATMutateAddLink());
+        result.addOperation(0.35, new MMNEATCrossover());
+        result.addOperation(0.395, weightMutation);
+        result.addOperation(0.05, new MMNEATMutateAddNode());
+        result.addOperation(0.05, new NEATMutateAddLink());
         result.addOperation(0.005, new MMNEATMutateRemoveLink());
 
         // Add the sensor position mutator
@@ -113,9 +113,9 @@ public final class MMNEATUtil {
         double connectionDensity = 0.1;
         // Proximity sensors "cheaper" prefer to evolve them
         // they are also short range and produce 0 most of the time so perturb the weight more
-        result.addOperation(0.006, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
+        result.addOperation(0.03, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
                 connectionDensity, new MutateResetLinkWeight()));
-        result.addOperation(0.004, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
+        result.addOperation(0.02, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
                 connectionDensity, new MutatePerturbLinkWeight(0.2)));
 
 
