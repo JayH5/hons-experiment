@@ -40,7 +40,8 @@ public class SelectSensorsFixed implements SelectSensors {
         while (result.size() < count) {
             final int idx = rnd.nextInt(genome.getInputNeuronsChromosome().size());
             final MMNEATNeuronGene sensor = genome.getInputNeuronsChromosome().get(idx);
-            if (sensor.getInputSensorType().isConfigurable() && !result.contains(sensor)) {
+            if (sensor.getSensorConfiguration().getSensorType().isConfigurable()
+                    && !result.contains(sensor)) {
                 result.add(sensor);
             }
         }

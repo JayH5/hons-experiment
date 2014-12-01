@@ -4,15 +4,16 @@ import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.neat.NEATLink;
 import org.encog.neural.neat.NEATNetwork;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
 
 /**
  * Created by jamie on 2014/09/08.
  */
 public class MMNEATNetwork extends NEATNetwork {
 
-    private static final long serialVersionUID = -2277991937281560066L;
+    private static final long serialVersionUID = 6663988435664701217L;
 
     private final SensorMorphology sensorMorphology;
 

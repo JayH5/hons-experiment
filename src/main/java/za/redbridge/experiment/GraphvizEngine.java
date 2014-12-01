@@ -19,8 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import za.redbridge.experiment.MMNEAT.sensor.SensorConfiguration;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.SensorParameterSet;
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
-import za.redbridge.experiment.sensor.SensorType;
+import za.redbridge.experiment.MMNEAT.sensor.SensorType;
+
+
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.*;
 
 /**
  * Basic methods to save a genome as a Graphviz ".dot" file so that it can be visualized.
@@ -59,14 +64,19 @@ public class GraphvizEngine {
             if (neuron.getNeuronType() == NEATNeuronType.Input
                     && neuron instanceof MMNEATNeuronGene) {
                 MMNEATNeuronGene mmneatNeuronGene = (MMNEATNeuronGene) neuron;
-                SensorType sensorType = mmneatNeuronGene.getInputSensorType();
+                SensorConfiguration sensorConfiguration = mmneatNeuronGene.getSensorConfiguration();
+                SensorType sensorType = sensorConfiguration.getSensorType();
                 writer.write(" [ label=\"" + neuron.getNeuronType()
                         + " (" + neuron.getId() + ")"
                         + "\\n" + formatSensorTypeString(sensorType));
+
                 if (sensorType.isConfigurable()) {
-                    writer.write("\\n" + String.format("B:%.2f, O:%.2f",
-                            mmneatNeuronGene.getInputSensorBearing(),
-                            mmneatNeuronGene.getInputSensorOrientation()));
+                    SensorParameterSet parameterSet = sensorConfiguration.getSensorParameterSet();
+                    writer.write("\\n" + String.format("B:%.2f, O:%.2f, R:%.2f, F:%.2f",
+                            parameterSet.getParameter(BEARING).getValue(),
+                            parameterSet.getParameter(ORIENTATION).getValue(),
+                            parameterSet.getParameter(RANGE).getValue(),
+                            parameterSet.getParameter(FIELD_OF_VIEW).getValue()));
                 }
                 writer.write("\" ];");
             } else {

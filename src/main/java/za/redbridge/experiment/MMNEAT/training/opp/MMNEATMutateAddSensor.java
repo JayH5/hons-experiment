@@ -1,7 +1,6 @@
 package za.redbridge.experiment.MMNEAT.training.opp;
 
 import org.encog.engine.network.activation.ActivationFunction;
-import org.encog.mathutil.randomize.RangeRandomizer;
 import org.encog.ml.ea.genome.Genome;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.training.NEATInnovation;
@@ -15,9 +14,11 @@ import java.util.List;
 import java.util.Random;
 
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
+import za.redbridge.experiment.MMNEAT.sensor.SensorConfiguration;
+import za.redbridge.experiment.MMNEAT.sensor.SensorType;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.SensorParameterSet;
 import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
-import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Mutation to add a single new input node to the network. This mutation adds a new sensor in a
@@ -72,11 +73,25 @@ public class MMNEATMutateAddSensor extends NEATMutation {
         // Create the input node with random sensor configuration
         MMNEATNeuronGene inputNeuron = new MMNEATNeuronGene(NEATNeuronType.Input, af,
                 innovation.getNeuronID(), innovation.getInnovationID());
-        inputNeuron.setInputSensorBearing(RangeRandomizer.randomize(rnd,
-                -pop.getSensorBearingRange(), pop.getSensorBearingRange()));
-        inputNeuron.setInputSensorOrientation(RangeRandomizer.randomize(rnd,
-                -pop.getSensorOrientationRange(), pop.getSensorOrientationRange()));
-        inputNeuron.setInputSensorType(sensorType);
+
+        SensorParameterSet parameterSet = null;
+        if (sensorType.isConfigurable()) {
+            // Find an existing parameter set from another sensor of the same type
+            List<MMNEATNeuronGene> inputNeurons = target.getInputNeuronsChromosome();
+            SensorParameterSet existingParameters = null;
+            for (MMNEATNeuronGene neuron : inputNeurons) {
+                SensorConfiguration configuration = neuron.getSensorConfiguration();
+                if (configuration.getSensorType() == sensorType) {
+                    existingParameters = configuration.getSensorParameterSet();
+                    break;
+                }
+            }
+
+            parameterSet =
+                    sensorType.getDefaultSpecSet().createParameterSet(rnd, existingParameters);
+        }
+
+        inputNeuron.setSensorConfiguration(new SensorConfiguration(sensorType, parameterSet));
         target.addInputNeuron(inputNeuron);
 
         // Get the list of all neurons that aren't input nodes or the bias node

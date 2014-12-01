@@ -9,7 +9,7 @@ import java.util.Map;
 
 import sim.util.Double2D;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
-import za.redbridge.experiment.MMNEAT.SensorMorphology;
+import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
 import za.redbridge.simulator.phenotype.Phenotype;
 import za.redbridge.simulator.sensor.AgentSensor;
 

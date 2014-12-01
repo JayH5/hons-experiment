@@ -2,6 +2,7 @@ package za.redbridge.experiment.MMNEAT;
 
 import org.encog.ml.CalculateScore;
 import org.encog.ml.ea.opp.CompoundOperator;
+import org.encog.ml.ea.opp.OperationList;
 import org.encog.ml.ea.opp.selection.TruncationSelection;
 import org.encog.ml.ea.train.basic.TrainEA;
 import org.encog.neural.neat.NEATPopulation;
@@ -12,16 +13,20 @@ import org.encog.neural.neat.training.opp.links.MutateResetLinkWeight;
 import org.encog.neural.neat.training.opp.links.SelectFixed;
 import org.encog.neural.neat.training.opp.links.SelectProportion;
 
+import za.redbridge.experiment.MMNEAT.sensor.SensorType;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATCrossover;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddNode;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateAddSensor;
-import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutatePositions;
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateIndividualSensor;
 import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateRemoveLink;
-import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorPosition;
-import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutateResetSensorPosition;
+import za.redbridge.experiment.MMNEAT.training.opp.MMNEATMutateSensorGroup;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.MutatePerturbSensorParameter;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
+import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsType;
 import za.redbridge.experiment.MMNEAT.training.species.MMNEATSpeciation;
-import za.redbridge.experiment.sensor.SensorType;
+
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.*;
+import static za.redbridge.experiment.MMNEAT.sensor.SensorType.*;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -85,38 +90,49 @@ public final class MMNEATUtil {
         result.setChampMutation(weightMutation);
 
         // Add all the operators, probability should sum to 1
-        result.addOperation(0.35, new MMNEATCrossover());
-        result.addOperation(0.395, weightMutation);
+        result.addOperation(0.32, new MMNEATCrossover());
+        result.addOperation(0.375, weightMutation);
         result.addOperation(0.05, new MMNEATMutateAddNode());
         result.addOperation(0.05, new NEATMutateAddLink());
         result.addOperation(0.005, new MMNEATMutateRemoveLink());
 
-        // Add the sensor position mutator
+        // Add the sensor position mutators
         CompoundOperator positionMutation = new CompoundOperator();
-        positionMutation.getComponents().add(0.05, new MMNEATMutatePositions(
-                new SelectSensorsFixed(1), new MutateResetSensorPosition()));
-        positionMutation.getComponents().add(0.05, new MMNEATMutatePositions(
-                new SelectSensorsFixed(2), new MutateResetSensorPosition()));
-        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
-                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.01, 0.005)));
-        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
-                new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.01, 0.005)));
-        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
-                new SelectSensorsFixed(1), new MutatePerturbSensorPosition(0.1, 0.05)));
-        positionMutation.getComponents().add(0.225, new MMNEATMutatePositions(
-                new SelectSensorsFixed(2), new MutatePerturbSensorPosition(0.1, 0.05)));
-        positionMutation.getComponents().finalizeStructure();
+        OperationList positionMutationComponents = positionMutation.getComponents();
+        positionMutationComponents.add(0.25, new MMNEATMutateIndividualSensor(
+                new SelectSensorsFixed(1), new MutatePerturbSensorParameter(5.0f, BEARING)));
+        positionMutationComponents.add(0.25, new MMNEATMutateIndividualSensor(
+                new SelectSensorsFixed(2), new MutatePerturbSensorParameter(5.0f, BEARING)));
+        positionMutationComponents.add(0.25, new MMNEATMutateIndividualSensor(
+                new SelectSensorsFixed(1), new MutatePerturbSensorParameter(5.0f, ORIENTATION)));
+        positionMutationComponents.add(0.25, new MMNEATMutateIndividualSensor(
+                new SelectSensorsFixed(2), new MutatePerturbSensorParameter(5.0f, ORIENTATION)));
+        positionMutationComponents.finalizeStructure();
 
         result.addOperation(0.1, positionMutation);
 
+        // Add the sensor field mutators
+        CompoundOperator fieldMutation = new CompoundOperator();
+        OperationList fieldMutationComponents = fieldMutation.getComponents();
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(new SelectSensorsType(ULTRASONIC),
+                new MutatePerturbSensorParameter(5.0f, RANGE)));
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(new SelectSensorsType(PROXIMITY),
+                new MutatePerturbSensorParameter(5.0f, FIELD_OF_VIEW)));
+        fieldMutationComponents.finalizeStructure();
+
+        result.addOperation(0.05, fieldMutation);
+
         // Add sensor mutation
         double connectionDensity = 0.1;
-        // Proximity sensors "cheaper" prefer to evolve them
-        // they are also short range and produce 0 most of the time so perturb the weight more
-        result.addOperation(0.03, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
+        CompoundOperator addSensorMutation = new CompoundOperator();
+        OperationList addSensorComponents = addSensorMutation.getComponents();
+        addSensorComponents.add(0.5, new MMNEATMutateAddSensor(SensorType.PROXIMITY,
                 connectionDensity, new MutateResetLinkWeight()));
-        result.addOperation(0.02, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
+        addSensorComponents.add(0.5, new MMNEATMutateAddSensor(SensorType.ULTRASONIC,
                 connectionDensity, new MutatePerturbLinkWeight(0.2)));
+        addSensorComponents.finalizeStructure();
+
+        result.addOperation(0.05, addSensorMutation);
 
 
         result.getOperators().finalizeStructure();

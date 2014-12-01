@@ -13,7 +13,11 @@ import java.util.List;
 import java.util.Random;
 
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
-import za.redbridge.experiment.sensor.SensorType;
+import za.redbridge.experiment.MMNEAT.sensor.SensorConfiguration;
+import za.redbridge.experiment.MMNEAT.sensor.SensorType;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.SensorParameterSet;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.SensorParameterSpec;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.SensorParameterSpecSet;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -137,18 +141,13 @@ public class MMNEATGenome extends NEATGenome {
             neurons.add(gene);
 
             SensorType sensorType = sensorTypes[i];
-            gene.setInputSensorType(sensorType);
 
+            SensorParameterSet parameterSet = null;
             if (sensorType.isConfigurable()) {
-                double bearing = RangeRandomizer.randomize(rnd, -population.getSensorBearingRange(),
-                        population.getSensorBearingRange());
-                gene.setInputSensorBearing(bearing);
-
-                double orientation = RangeRandomizer.randomize(rnd,
-                        -population.getSensorOrientationRange(),
-                        population.getSensorOrientationRange());
-                gene.setInputSensorOrientation(orientation);
+                parameterSet = sensorType.getDefaultSpecSet().createParameterSet(rnd, null);
             }
+
+            gene.setSensorConfiguration(new SensorConfiguration(sensorType, parameterSet));
         }
 
         // then outputs
@@ -205,7 +204,7 @@ public class MMNEATGenome extends NEATGenome {
             switch (neuron.getNeuronType()) {
                 case Input:
                     inputsList.add(neuronGene);
-                    if (neuronGene.getInputSensorType().isConfigurable()) {
+                    if (neuronGene.getSensorConfiguration().getSensorType().isConfigurable()) {
                         configurableSensorCount++;
                     }
                     break;

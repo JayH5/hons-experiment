@@ -14,7 +14,7 @@ import java.io.IOException;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
 import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
 import za.redbridge.experiment.MMNEAT.MMNEATUtil;
-import za.redbridge.experiment.MMNEAT.SensorMorphology;
+import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
 import za.redbridge.experiment.NEAT.NEATPopulation;
 import za.redbridge.experiment.NEAT.NEATUtil;
 import za.redbridge.simulator.config.SimConfig;

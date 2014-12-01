@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import za.redbridge.experiment.MMNEAT.sensor.SensorModel;
+import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
 import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 
@@ -70,16 +72,16 @@ public class MMNEATCODEC implements GeneticCODEC, Serializable {
         // Create the sensor morphology
         final int inputCount = neatGenome.getInputCount();
         final List<MMNEATNeuronGene> inputNeurons = neatGenome.getInputNeuronsChromosome();
-        SensorMorphology morphology = new SensorMorphology(inputCount);
+        SensorModel[] sensorModels = new SensorModel[inputCount];
         for (int i = 0; i < inputCount; i++) {
             MMNEATNeuronGene inputNeuron = inputNeurons.get(i);
-            morphology.setSensorBearing(i, inputNeuron.getInputSensorBearing());
-            morphology.setSensorOrientation(i, inputNeuron.getInputSensorOrientation());
-            morphology.setSensorType(i, inputNeuron.getInputSensorType());
+            sensorModels[i] = inputNeuron.getSensorConfiguration().toSensorModel();
         }
 
-        MMNEATNetwork network = new MMNEATNetwork(neatGenome.getInputCount(),
-                neatGenome.getOutputCount(), links, afs, morphology);
+        SensorMorphology morphology = new SensorMorphology(sensorModels);
+
+        MMNEATNetwork network = new MMNEATNetwork(inputCount, neatGenome.getOutputCount(), links,
+                afs, morphology);
 
         network.setActivationCycles(pop.getActivationCycles());
         return network;

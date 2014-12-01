@@ -6,8 +6,8 @@ import org.encog.neural.neat.training.NEATInnovationList;
 
 import java.util.Random;
 
+import za.redbridge.experiment.MMNEAT.sensor.SensorType;
 import za.redbridge.experiment.NEAT.NEATPopulation;
-import za.redbridge.experiment.sensor.SensorType;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -15,10 +15,6 @@ import za.redbridge.experiment.sensor.SensorType;
 public class MMNEATPopulation extends NEATPopulation {
 
     private static final long serialVersionUID = -6647644833955733411L;
-
-    private final double sensorBearingRange = Math.PI;
-
-    private final double sensorOrientationRange = Math.PI / 2;
 
     /**
      * An empty constructor for serialization.
@@ -71,11 +67,4 @@ public class MMNEATPopulation extends NEATPopulation {
         setInnovations(new NEATInnovationList(this));
     }
 
-    public double getSensorOrientationRange() {
-        return sensorOrientationRange;
-    }
-
-    public double getSensorBearingRange() {
-        return sensorBearingRange;
-    }
 }

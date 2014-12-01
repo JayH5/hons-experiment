@@ -4,7 +4,7 @@ import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.neat.NEATNeuronType;
 import org.encog.neural.neat.training.NEATNeuronGene;
 
-import za.redbridge.experiment.sensor.SensorType;
+import za.redbridge.experiment.MMNEAT.sensor.SensorConfiguration;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -13,9 +13,7 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
 
     private static final long serialVersionUID = 1583781843029771944L;
 
-    private double inputSensorBearing;
-    private double inputSensorOrientation;
-    private SensorType inputSensorType;
+    private SensorConfiguration sensorConfiguration;
 
     public MMNEATNeuronGene(NEATNeuronType type, ActivationFunction theActivationFunction, long id,
             long innovationID) {
@@ -46,39 +44,16 @@ public class MMNEATNeuronGene extends NEATNeuronGene {
         setInnovationId(other.getInnovationId());
 
         if (getNeuronType() == NEATNeuronType.Input) {
-            setInputSensorBearing(other.getInputSensorBearing());
-            setInputSensorOrientation(other.getInputSensorOrientation());
-            setInputSensorType(other.getInputSensorType());
+            setSensorConfiguration(other.getSensorConfiguration().clone());
         }
     }
 
-    public double getInputSensorBearing() {
-        checkInputNeuron();
-        return inputSensorBearing;
+    public SensorConfiguration getSensorConfiguration() {
+        return sensorConfiguration;
     }
 
-    public void setInputSensorBearing(double inputSensorBearing) {
-        checkInputNeuron();
-        this.inputSensorBearing = inputSensorBearing;
-    }
-
-    public double getInputSensorOrientation() {
-        checkInputNeuron();
-        return inputSensorOrientation;
-    }
-
-    public void setInputSensorOrientation(double inputSensorOrientation) {
-        checkInputNeuron();
-        this.inputSensorOrientation = inputSensorOrientation;
-    }
-
-    public SensorType getInputSensorType() {
-        checkInputNeuron();
-        return inputSensorType;
-    }
-
-    public void setInputSensorType(SensorType inputSensorType) {
-        this.inputSensorType = inputSensorType;
+    public void setSensorConfiguration(SensorConfiguration sensorConfiguration) {
+        this.sensorConfiguration = sensorConfiguration;
     }
 
     private void checkInputNeuron() {

@@ -4,13 +4,13 @@ import org.encog.ml.ea.genome.Genome;
 
 import java.util.List;
 
-import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
+import za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType;
 import za.redbridge.experiment.MMNEAT.training.MMNEATGenome;
 import za.redbridge.experiment.MMNEAT.training.MMNEATNeuronGene;
 import za.redbridge.experiment.NEAT.training.species.NEATSpeciation;
 
 /**
- * Adds an additional term to the NEAT speciation that accounts for sensor position.
+ * Adds an additional term to the NEAT speciation that accounts for sensor parameters.
  *
  * Created by jamie on 2014/10/21.
  */
@@ -18,25 +18,18 @@ public class MMNEATSpeciation extends NEATSpeciation {
 
     private static final long serialVersionUID = -505824828539787086L;
 
-    private double constBearing = 0.4;
-
-    private double constOrientation = 0.1;
-
     @Override
     public double getCompatibilityScore(Genome gen1, Genome gen2) {
         double score = super.getCompatibilityScore(gen1, gen2);
 
         int numMatched = 0;
 
-        double bearingDifference = 0;
-        double orientationDifference = 0;
+        ParameterType[] parameterTypes = ParameterType.values();
+        final int numParameters = parameterTypes.length;
+        double[] differences = new double[numParameters];
 
         MMNEATGenome genome1 = (MMNEATGenome) gen1;
         MMNEATGenome genome2 = (MMNEATGenome) gen2;
-
-        MMNEATPopulation population = (MMNEATPopulation) gen1.getPopulation();
-        double bearingRange = population.getSensorBearingRange();
-        double orientationRange = population.getSensorOrientationRange();
 
         List<MMNEATNeuronGene> genome1Inputs = genome1.getInputNeuronsChromosome();
         List<MMNEATNeuronGene> genome2Inputs = genome2.getInputNeuronsChromosome();
@@ -56,17 +49,26 @@ public class MMNEATSpeciation extends NEATSpeciation {
             long id2 = genome2Input.getId();
 
             if (id1 == id2) {
-                double bearing1 = genome1Input.getInputSensorBearing() / bearingRange;
-                double bearing2 = genome2Input.getInputSensorBearing() / bearingRange;
-                bearingDifference += Math.abs(bearing2 - bearing1);
+                // Get the difference of every parameter
+                if (genome1Input.getSensorConfiguration().getSensorType().isConfigurable()) {
+                    for (int i = 0; i < numParameters; i++) {
+                        ParameterType parameterType = parameterTypes[i];
+                        float genome1Parameter = genome1Input.getSensorConfiguration()
+                                .getSensorParameterSet().getParameter(parameterType)
+                                .getNormalizedValue();
 
-                double orientation1 = genome1Input.getInputSensorOrientation() / orientationRange;
-                double orientation2 = genome2Input.getInputSensorOrientation() / orientationRange;
-                orientationDifference += Math.abs(orientation2 - orientation1);
+                        float genome2Parameter = genome2Input.getSensorConfiguration()
+                                .getSensorParameterSet().getParameter(parameterType)
+                                .getNormalizedValue();
+
+                        double difference = Math.abs(genome2Parameter - genome1Parameter);
+                        differences[i] += difference;
+                    }
+                    numMatched++;
+                }
 
                 g1++;
                 g2++;
-                numMatched++;
             } else if (id1 < id2) {
                 g1++;
             } else { // if (id1 > id2)
@@ -74,25 +76,14 @@ public class MMNEATSpeciation extends NEATSpeciation {
             }
         }
 
-        score += constBearing * (bearingDifference / numMatched)
-                + constOrientation * (orientationDifference / numMatched);
+        // Calculate the total score for the parameters
+        double sensorScore = 0;
+        for (int i = 0; i < numParameters; i++) {
+            sensorScore += parameterTypes[i].getSpeciationWeighting()
+                    * (differences[i] / numMatched);
+        }
 
-        return score;
+        return score + sensorScore;
     }
 
-    public double getConstBearing() {
-        return constBearing;
-    }
-
-    public void setConstBearing(double constBearing) {
-        this.constBearing = constBearing;
-    }
-
-    public double getConstOrientation() {
-        return constOrientation;
-    }
-
-    public void setConstOrientation(double constOrientation) {
-        this.constOrientation = constOrientation;
-    }
 }

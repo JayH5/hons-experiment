@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import sim.display.Console;
 import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
-import za.redbridge.experiment.MMNEAT.SensorMorphology;
+import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
 import za.redbridge.simulator.Simulation;
 import za.redbridge.simulator.SimulationGUI;
 import za.redbridge.simulator.config.SimConfig;
