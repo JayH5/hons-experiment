@@ -25,8 +25,13 @@ import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsFixed;
 import za.redbridge.experiment.MMNEAT.training.opp.sensors.SelectSensorsType;
 import za.redbridge.experiment.MMNEAT.training.species.MMNEATSpeciation;
 
-import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.*;
-import static za.redbridge.experiment.MMNEAT.sensor.SensorType.*;
+
+import static za.redbridge.experiment.MMNEAT.sensor.SensorType.PROXIMITY;
+import static za.redbridge.experiment.MMNEAT.sensor.SensorType.ULTRASONIC;
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.BEARING;
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.FIELD_OF_VIEW;
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.ORIENTATION;
+import static za.redbridge.experiment.MMNEAT.sensor.parameter.spec.ParameterType.RANGE;
 
 /**
  * Created by jamie on 2014/09/08.
@@ -114,9 +119,15 @@ public final class MMNEATUtil {
         // Add the sensor field mutators
         CompoundOperator fieldMutation = new CompoundOperator();
         OperationList fieldMutationComponents = fieldMutation.getComponents();
-        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(new SelectSensorsType(ULTRASONIC),
-                new MutatePerturbSensorParameter(5.0f, RANGE)));
-        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(new SelectSensorsType(PROXIMITY),
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(
+                new SelectSensorsType(ULTRASONIC), new MutatePerturbSensorParameter(5.0f, RANGE)));
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(
+                new SelectSensorsType(PROXIMITY), new MutatePerturbSensorParameter(5.0f, RANGE)));
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(
+                new SelectSensorsType(ULTRASONIC),
+                new MutatePerturbSensorParameter(5.0f, FIELD_OF_VIEW)));
+        fieldMutationComponents.add(0.5, new MMNEATMutateSensorGroup(
+                new SelectSensorsType(PROXIMITY),
                 new MutatePerturbSensorParameter(5.0f, FIELD_OF_VIEW)));
         fieldMutationComponents.finalizeStructure();
 
