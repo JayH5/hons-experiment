@@ -12,18 +12,15 @@ public final class Limiters {
         return new Limiter() {
             @Override
             public float limitValue(float oldValue, float newValue, Range range) {
-                if ((range.inclusiveMin && newValue < range.min)
-                        || (!range.inclusiveMin && newValue <= range.min)) {
-                    return range.inclusiveMax ?
-                            range.max : Math.nextAfter(range.max, Double.NEGATIVE_INFINITY);
+                final float diff = range.max - range.min;
+                newValue %= diff;
+                if (range.inclusiveMin && newValue < range.min
+                        || !range.inclusiveMin && newValue <= range.min) {
+                    newValue += diff;
+                } else if (range.inclusiveMax && newValue > range.max
+                        || !range.inclusiveMax && newValue >= range.max) {
+                    newValue -= diff;
                 }
-
-                if ((range.inclusiveMax && newValue > range.max)
-                        || (!range.inclusiveMax && newValue >= range.max)) {
-                    return range.inclusiveMin ?
-                            range.min : Math.nextAfter(range.min, Double.POSITIVE_INFINITY);
-                }
-
                 return newValue;
             }
         };
