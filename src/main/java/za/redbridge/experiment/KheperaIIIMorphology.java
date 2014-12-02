@@ -1,15 +1,15 @@
 package za.redbridge.experiment;
 
-import za.redbridge.experiment.MMNEAT.sensor.SensorModel;
-import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
+import za.redbridge.experiment.NEATM.sensor.SensorModel;
+import za.redbridge.experiment.NEATM.sensor.SensorMorphology;
 import za.redbridge.simulator.khepera.KheperaIIIPhenotype;
 import za.redbridge.simulator.khepera.ProximitySensor;
 import za.redbridge.simulator.khepera.UltrasonicSensor;
 
 
-import static za.redbridge.experiment.MMNEAT.sensor.SensorType.BOTTOM_PROXIMITY;
-import static za.redbridge.experiment.MMNEAT.sensor.SensorType.PROXIMITY;
-import static za.redbridge.experiment.MMNEAT.sensor.SensorType.ULTRASONIC;
+import static za.redbridge.experiment.NEATM.sensor.SensorType.BOTTOM_PROXIMITY;
+import static za.redbridge.experiment.NEATM.sensor.SensorType.PROXIMITY;
+import static za.redbridge.experiment.NEATM.sensor.SensorType.ULTRASONIC;
 
 /**
  * A horrible adapter class for different representations of morphologies. Creates a

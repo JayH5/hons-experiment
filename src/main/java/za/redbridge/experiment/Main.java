@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import za.redbridge.experiment.MMNEAT.MMNEATNetwork;
-import za.redbridge.experiment.MMNEAT.MMNEATPopulation;
-import za.redbridge.experiment.MMNEAT.MMNEATUtil;
-import za.redbridge.experiment.MMNEAT.sensor.SensorMorphology;
+import za.redbridge.experiment.NEATM.NEATMNetwork;
+import za.redbridge.experiment.NEATM.NEATMPopulation;
+import za.redbridge.experiment.NEATM.NEATMUtil;
+import za.redbridge.experiment.NEATM.sensor.SensorMorphology;
 import za.redbridge.experiment.NEAT.NEATPopulation;
 import za.redbridge.experiment.NEAT.NEATUtil;
 import za.redbridge.simulator.config.SimConfig;
@@ -51,7 +51,7 @@ public class Main {
         SensorMorphology morphology = null;
         if (options.control) {
             if (!isBlank(options.morphologyPath)) {
-                MMNEATNetwork network = (MMNEATNetwork) readObjectFromFile(options.morphologyPath);
+                NEATMNetwork network = (NEATMNetwork) readObjectFromFile(options.morphologyPath);
                 morphology = network.getSensorMorphology();
             } else {
                 morphology = new KheperaIIIMorphology();
@@ -73,7 +73,7 @@ public class Main {
             population = (NEATPopulation) readObjectFromFile(options.populationPath);
         } else {
             if (!options.control) {
-                population = new MMNEATPopulation(2, options.populationSize);
+                population = new NEATMPopulation(2, options.populationSize);
             } else {
                 population = new NEATPopulation(morphology.getNumSensors(), 2, options.populationSize);
             }
@@ -85,7 +85,7 @@ public class Main {
 
         EvolutionaryAlgorithm train;
         if (!options.control) {
-            train = MMNEATUtil.constructNEATTrainer(population, calculateScore);
+            train = NEATMUtil.constructNEATTrainer(population, calculateScore);
         } else {
             train = NEATUtil.constructNEATTrainer(population, calculateScore);
         }

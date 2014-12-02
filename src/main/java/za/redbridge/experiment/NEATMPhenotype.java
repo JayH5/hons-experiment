@@ -2,33 +2,32 @@ package za.redbridge.experiment;
 
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
-import org.encog.neural.neat.NEATNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import sim.util.Double2D;
+import za.redbridge.experiment.NEATM.NEATMNetwork;
 import za.redbridge.experiment.NEATM.sensor.SensorMorphology;
 import za.redbridge.simulator.phenotype.Phenotype;
 import za.redbridge.simulator.sensor.AgentSensor;
 
 /**
- * Created by jamie on 2014/10/06.
+ * Created by jamie on 2014/09/09.
  */
-public class NEATPhenotype implements Phenotype {
+public class NEATMPhenotype implements Phenotype {
 
-    private final NEATNetwork network;
-    private final SensorMorphology morphology;
-
+    private final NEATMNetwork network;
     private final MLData input;
+
     private final List<AgentSensor> sensors;
 
-    public NEATPhenotype(NEATNetwork network, SensorMorphology morphology) {
+    public NEATMPhenotype(NEATMNetwork network) {
         this.network = network;
-        this.morphology = morphology;
 
         // Initialise sensors
+        SensorMorphology morphology = network.getSensorMorphology();
         final int numSensors = morphology.getNumSensors();
         sensors = new ArrayList<>(numSensors);
         for (int i = 0; i < numSensors; i++) {
@@ -57,7 +56,7 @@ public class NEATPhenotype implements Phenotype {
 
     @Override
     public Phenotype clone() {
-        return new NEATPhenotype(network, morphology);
+        return new NEATMPhenotype(network);
     }
 
     @Override
