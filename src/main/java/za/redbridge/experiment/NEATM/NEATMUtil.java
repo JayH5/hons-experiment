@@ -104,14 +104,10 @@ public final class NEATMUtil {
         // Add the sensor position mutators
         CompoundOperator positionMutation = new CompoundOperator();
         OperationList positionMutationComponents = positionMutation.getComponents();
-        positionMutationComponents.add(0.25, new NEATMMutateIndividualSensor(
+        positionMutationComponents.add(0.5, new NEATMMutateIndividualSensor(
                 new SelectSensorsFixed(1), new MutatePerturbSensorParameter(5.0f, BEARING)));
-        positionMutationComponents.add(0.25, new NEATMMutateIndividualSensor(
-                new SelectSensorsFixed(2), new MutatePerturbSensorParameter(5.0f, BEARING)));
-        positionMutationComponents.add(0.25, new NEATMMutateIndividualSensor(
+        positionMutationComponents.add(0.5, new NEATMMutateIndividualSensor(
                 new SelectSensorsFixed(1), new MutatePerturbSensorParameter(5.0f, ORIENTATION)));
-        positionMutationComponents.add(0.25, new NEATMMutateIndividualSensor(
-                new SelectSensorsFixed(2), new MutatePerturbSensorParameter(5.0f, ORIENTATION)));
         positionMutationComponents.finalizeStructure();
 
         result.addOperation(0.1, positionMutation);
