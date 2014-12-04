@@ -1,10 +1,13 @@
 package za.redbridge.experiment.NEATM.sensor;
 
+import org.jbox2d.common.MathUtils;
+
 import za.redbridge.experiment.NEATM.sensor.parameter.SensorParameterSpec.BearingSpec;
 import za.redbridge.experiment.NEATM.sensor.parameter.SensorParameterSpec.FieldOfViewSpec;
 import za.redbridge.experiment.NEATM.sensor.parameter.SensorParameterSpec.OrientationSpec;
 import za.redbridge.experiment.NEATM.sensor.parameter.SensorParameterSpec.RangeSpec;
 import za.redbridge.experiment.NEATM.sensor.parameter.SensorParameterSpecSet;
+import za.redbridge.experiment.NEATM.sensor.parameter.spec.Range;
 
 
 import static za.redbridge.experiment.NEATM.sensor.parameter.spec.Initializers.copyExistingOrRandom;
@@ -33,15 +36,17 @@ public enum SensorType {
             new BearingSpec(random(), plusMinusPi(), wrap()),
             new OrientationSpec(random(), plusMinusHalfPi(), clamp()),
             // TODO: query environment size for range value
-            new RangeSpec(copyExistingOrRandom(), exclusiveRange(0, 40), clamp()),
-            new FieldOfViewSpec(copyExistingOrRandom(), zeroToPi(), clamp()))),
+            new RangeSpec(copyExistingOrRandom(), exclusiveRange(0.01f, 40), clamp()),
+            new FieldOfViewSpec(copyExistingOrRandom(), new Range(0.1f, MathUtils.PI, true, true),
+                    clamp()))),
 
     ULTRASONIC(new SensorParameterSpecSet(
             new BearingSpec(random(), plusMinusPi(), wrap()),
             new OrientationSpec(random(), plusMinusHalfPi(), clamp()),
             // TODO: query environment size for range value
-            new RangeSpec(copyExistingOrRandom(), exclusiveRange(0, 40), clamp()),
-            new FieldOfViewSpec(copyExistingOrRandom(), zeroToPi(), clamp())));
+            new RangeSpec(copyExistingOrRandom(), exclusiveRange(0.01f, 40), clamp()),
+            new FieldOfViewSpec(copyExistingOrRandom(), new Range(0.1f, MathUtils.PI, true, true),
+                    clamp())));
 
     private final SensorParameterSpecSet defaultSpecSet;
 
