@@ -3,12 +3,11 @@ package za.redbridge.experiment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +56,7 @@ public final class Utils {
     }
 
     public static Path getLoggingDirectory() {
-        String hostname = getHostname();
+        String hostname = getLocalHostName();
         if (hostname == null) {
             hostname = "unknown";
         }
@@ -67,24 +66,13 @@ public final class Utils {
         return Paths.get("results", hostname + "-" + date);
     }
 
-    public static String getHostname() {
-        Process process;
+    public static String getLocalHostName() {
         try {
-            process = Runtime.getRuntime().exec("hostname");
+            return InetAddress.getLocalHost().getHostName();
         } catch (IOException e) {
-            log.error("Unable to request hostname", e);
-            return null;
+            log.error("Unable to query host name", e);
         }
-
-        String hostname = null;
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            hostname = reader.readLine();
-        } catch (IOException e) {
-            log.error("Failed to read stdout when requesting hostname", e);
-        }
-
-        return hostname;
+        return null;
     }
 
 }
