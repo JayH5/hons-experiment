@@ -1,5 +1,7 @@
 package za.redbridge.experiment.NEATM.training.opp.sensors;
 
+import org.apache.commons.math3.distribution.CauchyDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.encog.ml.ea.train.EvolutionaryAlgorithm;
 
 import java.util.List;
@@ -18,6 +20,8 @@ public class MutatePerturbSensorParameter implements MutateSensor {
 
     private final double sigma;
     private final ParameterType parameterType;
+
+    private final RealDistribution distribution = new CauchyDistribution();
 
     /**
      * Construct the perturbing mutator.
@@ -41,7 +45,7 @@ public class MutatePerturbSensorParameter implements MutateSensor {
     @Override
     public void mutateSensor(Random rnd, SensorConfiguration sensorConfiguration) {
         // Mutate parameter
-        double delta = rnd.nextGaussian() * sigma;
+        double delta = distribution.sample() * sigma;
         SensorParameter sensorParameter =
                 sensorConfiguration.getSensorParameterSet().getParameter(parameterType);
 
@@ -52,7 +56,7 @@ public class MutatePerturbSensorParameter implements MutateSensor {
     @Override
     public void mutateSensorGroup(Random rnd, List<SensorConfiguration> configurations) {
         // Mutate parameter
-        double delta = rnd.nextGaussian() * sigma;
+        double delta = distribution.sample() * sigma;
 
         for (SensorConfiguration configuration : configurations) {
             SensorParameter sensorParameter =
