@@ -4,7 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import org.encog.Encog;
-import org.encog.ml.ea.train.EvolutionaryAlgorithm;
+import org.encog.ml.ea.train.basic.TrainEA;
 import org.encog.neural.neat.NEATNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,11 +83,16 @@ public class Main {
             log.debug("Population initialized");
         }
 
-        EvolutionaryAlgorithm train;
+        TrainEA train;
         if (!options.control) {
             train = NEATMUtil.constructNEATTrainer(population, calculateScore);
         } else {
             train = NEATUtil.constructNEATTrainer(population, calculateScore);
+        }
+
+        log.info("Available processors detected: " + Runtime.getRuntime().availableProcessors());
+        if (options.threads > 0) {
+            train.setThreadCount(options.threads);
         }
 
         final StatsRecorder statsRecorder = new StatsRecorder(train, calculateScore);
@@ -137,6 +142,10 @@ public class Main {
                 + " the path to a serialized population")
         private String populationPath = null;
 
+        @Parameter(names = "--threads", description = "Number of threads to run simulations with."
+                + " By default Runtime#availableProcessors() is used to determine the number of threads to use")
+        private int threads = 0;
+
         @Override
         public String toString() {
             return "Options: \n"
@@ -148,7 +157,8 @@ public class Main {
                     + "\tDemo network config path: " + genomePath + "\n"
                     + "\tRunning with the control case: " + control + "\n"
                     + "\tMorphology path: " + morphologyPath + "\n"
-                    + "\tPopulation path: " + populationPath;
+                    + "\tPopulation path: " + populationPath + "\n"
+                    + "\tNumber of threads: " + threads;
         }
     }
 }
